@@ -167,7 +167,7 @@
             color: #b45309;
         }
 
-        .correction-box p {
+        .correction-box p, .correction-box ul {
             margin: 0;
             font-size: 14px;
             color: #78350f;
@@ -241,11 +241,11 @@
 
         <div class="answer-section">
             <label for="userAnswerInput">Nhập câu trả lời tiếng Anh của bạn:</label>
-            <input type="text" id="userAnswerInput" placeholder="Type your answer here (e.g., What is your name?)...">
+            <input type="text" id="userAnswerInput" placeholder="Type your answer here...">
             <button class="btn" id="submitAnswerBtn">Nộp Bài Trả Lời 🚀</button>
         </div>
 
-        <div class="feedback" id="feedbackBox">💡 Gõ câu tiếng Anh và bấm nộp bài để AI kiểm tra nhé!</div>
+        <div class="feedback" id="feedbackBox">💡 Gõ câu tiếng Anh và bấm nộp bài để AI chấm điểm nhé!</div>
 
         <div class="correction-box" id="gameCorrectionBox">
             <h3>📌 Gợi ý / Đáp án chuẩn từ AI:</h3>
@@ -275,7 +275,7 @@
 
         <div class="feedback" id="writingFeedback">💡 Nhập đoạn văn và bấm nút để hệ thống chấm bài nhé!</div>
 
-        <div class="correction-box" id="correctionBox" style="display: block; display: none;">
+        <div class="correction-box" id="correctionBox">
             <h3>🔍 Nhận Xét & Sửa Lỗi:</h3>
             <ul id="correctionList"></ul>
         </div>
@@ -364,10 +364,11 @@
         setupScreen.classList.remove('active');
         gameScreen.classList.add('active');
         
-        questionBox.textContent = `🤖 AI đang tạo bộ câu hỏi tự luận cấp độ ${currentLevel} cho bạn, chờ xíu nhé...`;
+        questionBox.textContent = `🤖 AI đang thiết kế bộ câu hỏi tự luận cấp độ ${currentLevel} cho bạn, chờ xíu nhé...`;
         userAnswerInput.style.display = 'none';
         submitAnswerBtn.style.display = 'none';
         nextBtn.style.display = 'none';
+        gameCorrectionBox.style.display = 'none';
 
         try {
             const response = await fetch("/api/chat", {
@@ -412,7 +413,7 @@
         questionBox.textContent = qData.q;
     }
 
-    submitAnswerBtn.addEventListener('click', () => {
+    submitAnswerBtn.addEventListener('click', async () => {
         if (answered) return;
         const userText = userAnswerInput.value.trim();
         if (!userText) {
@@ -423,34 +424,55 @@
         }
 
         answered = true;
+        submitAnswerBtn.disabled = true;
+        feedbackBox.innerHTML = `⏳ AI đang chấm câu trả lời của bạn...`;
+        feedbackBox.style.backgroundColor = '#eef2ff';
+        feedbackBox.style.color = '#4338ca';
+
         const qData = questionsList[currentIndex];
-        
-        // Kiểm tra xem câu trả lời của user có khớp gần đúng với đáp án mẫu (correctAnswer) hay không
-        const userClean = userText.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim();
-        const correctClean = qData.correctAnswer.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim();
 
-        // Chấp nhận nếu giống hoặc chứa từ khóa chính xác
-        if (userClean === correctClean || userClean.includes(correctClean)) {
-            score++;
-            feedbackBox.innerHTML = `✅ Chính xác tuyệt vời! Bạn trả lời quá chuẩn! 🔥`;
-            feedbackBox.style.backgroundColor = '#dcfce7';
-            feedbackBox.style.color = '#166534';
-        } else {
-            feedbackBox.innerHTML = `❌ Chưa chính xác hoàn toàn. Hãy xem đáp án gợi ý bên dưới nhé! 💪`;
-            feedbackBox.style.backgroundColor = '#fee2e2';
-            feedbackBox.style.color = '#991b1b';
-        }
+        try {
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "check_answer",
+                    text: qData.q,
+                    userAnswer: userText,
+                    correctAnswer: qData.correctAnswer
+                })
+            });
 
-        scoreText.textContent = `Điểm: ${score}`;
-        gameCorrectionBox.style.display = 'block';
-        gameCorrectionText.innerHTML = `Đáp án gợi ý chuẩn: <b>${qData.correctAnswer}</b><br>Giải thích: ${qData.explanation || 'Làm tốt lắm!'}`;
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
 
-        if (currentIndex < questionsList.length - 1) {
-            nextBtn.style.display = 'block';
-            nextBtn.textContent = 'Câu Tiếp Theo ➡️';
-        } else {
-            nextBtn.style.display = 'block';
-            nextBtn.textContent = 'Xem Kết Quả Tổng Kết 🏆';
+            if (data.isCorrect) {
+                score++;
+                feedbackBox.innerHTML = `✅ Chính xác! ${data.feedback} 🔥`;
+                feedbackBox.style.backgroundColor = '#dcfce7';
+                feedbackBox.style.color = '#166534';
+            } else {
+                feedbackBox.innerHTML = `❌ ${data.feedback} 💪`;
+                feedbackBox.style.backgroundColor = '#fee2e2';
+                feedbackBox.style.color = '#991b1b';
+            }
+
+            scoreText.textContent = `Điểm: ${score}`;
+            gameCorrectionBox.style.display = 'block';
+            gameCorrectionText.innerHTML = `Đáp án gợi ý chuẩn: <b>${qData.correctAnswer}</b><br>Giải thích: ${qData.explanation || ''}`;
+
+            if (currentIndex < questionsList.length - 1) {
+                nextBtn.style.display = 'block';
+                nextBtn.textContent = 'Câu Tiếp Theo ➡️';
+            } else {
+                nextBtn.style.display = 'block';
+                nextBtn.textContent = 'Xem Kết Quả Tổng Kết 🏆';
+            }
+
+        } catch (error) {
+            feedbackBox.innerHTML = `❌ Lỗi kết nối AI: ${error.message}`;
+        } finally {
+            submitAnswerBtn.disabled = false;
         }
     });
 
