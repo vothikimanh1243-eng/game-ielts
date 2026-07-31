@@ -37,7 +37,7 @@ QUAN TRỌNG: Chỉ trả về một mảng JSON thuần túy gồm đúng 5 obj
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile",
           messages: [{ role: "user", content: prompt }],
-          temperature: 0.5 // Hạ nhiệt độ để AI tuân thủ cấu trúc JSON chuẩn xác hơn
+          temperature: 0.5
         })
       });
 
@@ -46,7 +46,6 @@ QUAN TRỌNG: Chỉ trả về một mảng JSON thuần túy gồm đúng 5 obj
 
       let rawContent = data.choices[0].message.content.trim();
       
-      // Làm sạch chuỗi triệt để trước khi parse JSON
       rawContent = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
       const firstBracket = rawContent.indexOf('[');
       const lastBracket = rawContent.lastIndexOf(']');
@@ -58,7 +57,6 @@ QUAN TRỌNG: Chỉ trả về một mảng JSON thuần túy gồm đúng 5 obj
       try {
         parsedData = JSON.parse(rawContent);
       } catch (err) {
-        // Fallback nếu JSON lỗi cú pháp do AI sinh ký tự lạ
         console.error("JSON Parse Error:", err, rawContent);
         throw new Error("AI tạo định dạng lỗi, vui lòng bấm Bắt Đầu lại.");
       }
@@ -107,7 +105,29 @@ Trả về JSON thuần túy (không markdown):
       return res.status(200).json(JSON.parse(rawContent));
     }
 
-    // 3. CHẤM BÀI WRITING
+    // 3. XEM TỪ VỰNG THEO CẤP ĐỘ
+    if (action === 'get_vocabulary') {
+      const prompt = `Bạn là giáo viên tiếng Anh. Hãy liệt kê khoảng 8 từ vựng hoặc cụm từ quan trọng nhất ở cấp độ CEFR: ${level}.
+Mỗi từ vựng bao gồm: Từ tiếng Anh, từ loại, nghĩa tiếng Việt, và một câu ví dụ ngắn kèm dịch nghĩa.
+Hãy trả về kết quả định dạng HTML thuần túy (dùng các thẻ như <b>, <br>, <i>) để hiển thị đẹp mắt, không dùng markdown.`;
+
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.7
+        })
+      });
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error.message);
+
+      return res.status(200).json({ vocabularyHtml: data.choices[0].message.content });
+    }
+
+    // 4. CHẤM BÀI WRITING
     if (action === 'evaluate_writing' || !action) {
       if (!text) return res.status(400).json({ error: 'Thiếu nội dung!' });
 
