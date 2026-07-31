@@ -11,30 +11,24 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. TẠO CÂU HỎI TỰ LUẬN (ĐÃ NÂNG CẤP ĐỂ PHÂN BIỆT RÕ ĐỘ KHÓ)
+    // 1. TẠO CÂU HỎI TỰ LUẬN
     if (action === 'generate_questions') {
-      // Định nghĩa yêu cầu chi tiết theo độ khó
       let diffInstruction = "";
       if (diff === 'easy') {
-        diffInstruction = "Độ khó: Dễ. Dùng các câu đơn ngắn gọn, thì cơ bản (hiện tại đơn, quá khứ đơn), từ vựng thông dụng hàng ngày.";
+        diffInstruction = "Độ khó: Dễ. Dùng các câu đơn ngắn gọn, thì cơ bản, từ vựng thông dụng.";
       } else if (diff === 'medium') {
-        diffInstruction = "Độ khó: Trung bình. Dùng câu ghép, mệnh đề quan hệ cơ bản, các thì phức tạp hơn (hiện tại hoàn thành, tương lai tiếp diễn), từ vựng phong phú hơn.";
+        diffInstruction = "Độ khó: Trung bình. Dùng câu ghép, mệnh đề quan hệ, thì phức tạp hơn.";
       } else if (diff === 'hard') {
-        diffInstruction = "Độ khó: Khó. BẮT BUỘC phải dùng cấu trúc ngữ pháp nâng cao như: Câu điều kiện loại 2/3, câu giả định (subjunctive), đảo ngữ (inversion), bị động nâng cao, thành ngữ (idioms) hoặc cụm động từ (phrasal verbs) phức tạp.";
+        diffInstruction = "Độ khó: Khó. BẮT BUỘC dùng cấu trúc nâng cao như câu điều kiện, đảo ngữ, bị động nâng cao, cụm động từ phức tạp.";
       }
 
-      const prompt = `Bạn là một giáo viên tiếng Anh chuyên nghiệp. Hãy tạo ra đúng 5 câu hỏi tự luận tiếng Anh ở cấp độ CEFR: ${level}.
+      const prompt = `Bạn là một giáo viên tiếng Anh. Hãy tạo ra đúng 5 câu hỏi tự luận tiếng Anh ở cấp độ ${level}.
 ${diffInstruction}
-Yêu cầu bao gồm các dạng: Dịch câu từ tiếng Việt sang tiếng Anh và sắp xếp/ghép từ thành câu hoàn chỉnh.
+Yêu cầu: Dịch câu từ tiếng Việt sang tiếng Anh và sắp xếp/ghép từ thành câu hoàn chỉnh.
 
-Mỗi câu hỏi phải có cấu trúc JSON dạng mảng gồm các object với các trường sau:
-- "q": Nội dung câu hỏi (bằng tiếng Việt yêu cầu dịch hoặc yêu cầu sắp xếp từ phức tạp tương ứng với độ khó).
-- "correct": Đáp án tiếng Anh chính xác mẫu.
-- "explanation": Giải thích ngắn gọn bằng tiếng Việt về cấu trúc ngữ pháp hoặc từ vựng dùng trong câu.
-
-YÊU CẦU ĐỊNH DẠNG TUYỆT ĐỐI: Chỉ trả về duy nhất một chuỗi JSON hợp lệ dưới dạng một mảng (Array) gồm đúng 5 object, tuyệt đối không kèm markdown code block (không dùng \`\`\`json). Ví dụ format:
+QUAN TRỌNG: Chỉ trả về một mảng JSON thuần túy gồm đúng 5 object với cấu trúc chính xác sau, KHÔNG dùng markdown, KHÔNG dùng dấu ngoặc kép lồng nhau bên trong giá trị chuỗi:
 [
-  {"q": "Hãy dịch câu sau (dùng cấu trúc đảo ngữ): 'Hiếm khi tôi thấy anh ấy nổi giận.'", "correct": "Rarely did I see him get angry.", "explanation": "Sử dụng cấu trúc đảo ngữ với trạng từ chỉ tần suất đứng đầu câu."}
+  {"q": "Noi dung cau hoi", "correct": "Dap an tieng Anh", "explanation": "Giai thich"}
 ]`;
 
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -43,7 +37,7 @@ YÊU CẦU ĐỊNH DẠNG TUYỆT ĐỐI: Chỉ trả về duy nhất một chu�
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile",
           messages: [{ role: "user", content: prompt }],
-          temperature: 0.85 // Tăng độ sáng tạo một chút để AI đa dạng hóa câu hỏi
+          temperature: 0.5 // Hạ nhiệt độ để AI tuân thủ cấu trúc JSON chuẩn xác hơn
         })
       });
 
@@ -51,9 +45,24 @@ YÊU CẦU ĐỊNH DẠNG TUYỆT ĐỐI: Chỉ trả về duy nhất một chu�
       if (data.error) throw new Error(data.error.message);
 
       let rawContent = data.choices[0].message.content.trim();
-      rawContent = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
       
-      const parsedData = JSON.parse(rawContent);
+      // Làm sạch chuỗi triệt để trước khi parse JSON
+      rawContent = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
+      const firstBracket = rawContent.indexOf('[');
+      const lastBracket = rawContent.lastIndexOf(']');
+      if (firstBracket !== -1 && lastBracket !== -1) {
+        rawContent = rawContent.substring(firstBracket, lastBracket + 1);
+      }
+
+      let parsedData;
+      try {
+        parsedData = JSON.parse(rawContent);
+      } catch (err) {
+        // Fallback nếu JSON lỗi cú pháp do AI sinh ký tự lạ
+        console.error("JSON Parse Error:", err, rawContent);
+        throw new Error("AI tạo định dạng lỗi, vui lòng bấm Bắt Đầu lại.");
+      }
+
       const questionsArray = parsedData.map(item => ({
         q: item.q,
         correctAnswer: item.correct || item.correctAnswer,
@@ -63,19 +72,16 @@ YÊU CẦU ĐỊNH DẠNG TUYỆT ĐỐI: Chỉ trả về duy nhất một chu�
       return res.status(200).json({ questions: questionsArray });
     }
 
-    // 2. CHẤM CÂU TRẢ LỜI CỦA NGƯỜI DÙNG
+    // 2. CHẤM CÂU TRẢ LỜI
     if (action === 'check_answer') {
-      const prompt = `Bạn là giám khảo tiếng Anh thân thiện. 
-Câu hỏi gốc: "${text}"
-Đáp án mẫu chuẩn: "${correctAnswer}"
+      const prompt = `Bạn là giám khảo tiếng Anh. 
+Câu hỏi: "${text}"
+Đáp án mẫu: "${correctAnswer}"
 Học viên trả lời: "${userAnswer}"
 
-Hãy đánh giá xem câu trả lời của học viên có đúng ngữ nghĩa và ngữ pháp hay không (linh hoạt chấp nhận các từ đồng nghĩa hoặc biến thể hợp lý).
-Trả về định dạng JSON thuần túy (không dùng markdown \`\`\`json):
-{
-  "isCorrect": true hoặc false,
-  "feedback": "Nhận xét ngắn gọn bằng tiếng Việt"
-}`;
+Đánh giá đúng/sai (chấp nhận từ đồng nghĩa/biến thể hợp lý).
+Trả về JSON thuần túy (không markdown):
+{"isCorrect": true, "feedback": "Nhận xét ngắn gọn bằng tiếng Việt"}`;
 
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
@@ -92,6 +98,12 @@ Trả về định dạng JSON thuần túy (không dùng markdown \`\`\`json):
 
       let rawContent = data.choices[0].message.content.trim();
       rawContent = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
+      const firstBrace = rawContent.indexOf('{');
+      const lastBrace = rawContent.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        rawContent = rawContent.substring(firstBrace, lastBrace + 1);
+      }
+
       return res.status(200).json(JSON.parse(rawContent));
     }
 
