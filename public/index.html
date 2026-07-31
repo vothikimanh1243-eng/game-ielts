@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Vocabulary & Writing Challenge</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #4338ca;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 25px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 16px;
+            background-color: #f9fafb;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        select:focus, textarea:focus {
+            border-color: #6366f1;
+        }
+
+        .btn {
+            background-color: #4f46e5;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        .secondary-btn {
+            background-color: #6b7280;
+        }
+        .secondary-btn:hover {
+            background-color: #4b5563;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #4b5563;
+            background: #f3f4f6;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .question-box {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+            padding: 18px;
+            background: #eef2ff;
+            border-radius: 14px;
+            border: 1px dashed #c7d2fe;
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background-color: #f9fafb;
+            border: 2px solid #e5e7eb;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .option-btn.correct {
+            background-color: #d1fae5 !important;
+            border-color: #34d399 !important;
+            color: #065f46;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2 !important;
+            border-color: #fca5a5 !important;
+            color: #991b1b;
+        }
+
+        .feedback {
+            font-size: 15px;
+            font-weight: 600;
+            min-height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border-radius: 12px;
+            background-color: #f9fafb;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            text-align: left;
+        }
+
+        .correction-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: left;
+            display: none;
+        }
+
+        .correction-box h3 {
+            margin: 0 0 8px 0;
+            font-size: 15px;
+            color: #b45309;
+        }
+
+        .correction-box ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 14px;
+            color: #78350f;
+            line-height: 1.6;
+        }
+
+        .next-btn {
+            display: none;
+            background-color: #10b981;
+        }
+        .next-btn:hover {
+            background-color: #059669;
+        }
+
+        .result-title {
+            font-size: 26px;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+
+        .result-score {
+            font-size: 18px;
+            color: #4b5563;
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- SETUP SCREEN -->
+    <div id="setupScreen" class="screen active">
+        <h1>🚀 English Challenge</h1>
+        <div class="subtitle">Vocabulary quiz & Writing practice</div>
+        
+        <div class="form-group">
+            <label for="levelSelect">🎯 Select Level:</label>
+            <select id="levelSelect">
+                <option value="A1">A1 - Beginner</option>
+                <option value="A2">A2 - Elementary</option>
+                <option value="B1">B1 - Intermediate</option>
+                <option value="B2">B2 - Upper-Intermediate</option>
+                <option value="C1">C1 - Advanced / IELTS 7.0+</option>
+                <option value="C2">C2 - Proficiency</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="diffSelect">⚡ Select Difficulty:</label>
+            <select id="diffSelect">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+                <option value="superHard">Super Hard</option>
+            </select>
+        </div>
+
+        <button class="btn" id="startBtn">Start Challenge 🔥</button>
+        <button class="btn secondary-btn" id="goToWritingBtn">Chuyển sang Writing ✍️</button>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="gameScreen" class="screen">
+        <div class="game-header">
+            <span id="progressText">Question: 1/5</span>
+            <span id="scoreText">Score: 0</span>
+        </div>
+
+        <div class="question-box" id="questionBox">
+            Loading question...
+        </div>
+
+        <div class="options-grid" id="optionsGrid"></div>
+
+        <div class="feedback" id="feedbackBox">💡 Hãy chọn đáp án chính xác nhất!</div>
+
+        <button class="btn next-btn" id="nextBtn">Câu Tiếp Theo ➡️</button>
+        <button class="btn secondary-btn" id="backToSetupFromGame">Quay lại / Đổi chế độ ⚙️</button>
+    </div>
+
+    <!-- WRITING SCREEN -->
+    <div id="writingScreen" class="screen">
+        <h1>✍️ English Writing Practice</h1>
+        <div class="subtitle">Chấm lỗi Writing qua hệ thống Vercel API</div>
+
+        <div class="form-group">
+            <label for="writingPrompt">Chủ đề gợi ý:</label>
+            <div class="question-box" id="writingPromptBox" style="font-size: 15px; font-weight: normal; text-align: left;">
+                Hãy viết một câu hoặc đoạn ngắn về nhà bạn hoặc bạn bè (Ví dụ: "my house is very cozy, my house has 5 room...").
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="userWritingInput">Nhập nội dung viết của bạn:</label>
+            <textarea id="userWritingInput" rows="4" placeholder="Type your English text here..."></textarea>
+        </div>
+
+        <div class="feedback" id="writingFeedback">💡 Nhập câu tiếng Anh và bấm nút để hệ thống chấm bài nhé!</div>
+
+        <div class="correction-box" id="correctionBox">
+            <h3>🔍 Nhận Xét & Sửa Lỗi:</h3>
+            <ul id="correctionList"></ul>
+        </div>
+
+        <button class="btn" id="submitWritingBtn">Gửi Bài Chấm 🚀</button>
+        <button class="btn secondary-btn" id="backToSetupBtn">Quay lại màn hình chính 🏠</button>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="resultScreen" class="screen">
+        <div class="result-title">🎉 Hoàn Thành Xuất Sắc!</div>
+        <div class="result-score" id="finalScoreText">Bạn đạt điểm cao tuyệt đối</div>
+        <div class="feedback" id="finalPraise" style="background-color: #dcfce7; color: #166534; margin-bottom: 20px; text-align: center;">
+            Thấy chưa, bạn quá đỉnh và thông minh luôn!
+        </div>
+        <button class="btn" id="restartBtn">Chơi Lại Trận Mới 🔄</button>
+        <button class="btn secondary-btn" id="toWritingFromResBtn">Chuyển sang Writing ✍️</button>
+    </div>
+</div>
+
+<script>
+    const questionBank = {
+        "A1": {
+            "easy": [
+                { q: "Quả táo màu đỏ trong tiếng Anh gọi là gì?", options: ["Apple", "Banana", "Orange", "Grape"], correct: 0 },
+                { q: "Đồ vật dùng để viết bài tập là gì?", options: ["Desk", "Pen", "Chair", "Board"], correct: 1 },
+                { q: "Con vật nào kêu meo meo trong nhà?", options: ["Dog", "Bird", "Cat", "Fish"], correct: 2 },
+                { q: "Nơi gia đình sinh sống gọi là gì?", options: ["House", "Car", "School", "Park"], correct: 0 },
+                { q: "Thức uống trong suốt cần thiết mỗi ngày là gì?", options: ["Food", "Water", "Milk", "Tea"], correct: 1 }
+            ],
+            "medium": [
+                { q: "Chọn từ tiếng Anh chỉ 'Quả táo':", options: ["Apple", "Banana", "Orange", "Grape"], correct: 0 },
+                { q: "Từ nào dưới đây có nghĩa là 'Cây bút viết'?", options: ["Desk", "Pen", "Chair", "Board"], correct: 1 },
+                { q: "Loài vật nào sau đây là 'Con mèo'?", options: ["Dog", "Bird", "Cat", "Fish"], correct: 2 },
+                { q: "Từ vựng nào chỉ 'Ngôi nhà' của bạn?", options: ["House", "Car", "School", "Park"], correct: 0 },
+                { q: "Thức uống 'Nước' trong tiếng Anh viết thế nào?", options: ["Food", "Water", "Milk", "Tea"], correct: 1 }
+            ],
+            "hard": [
+                { q: "Điền từ thích hợp hoàn thành câu: 'I like to eat a fresh red ... every morning.'", options: ["apple", "banana", "orange", "grape"], correct: 0 },
+                { q: "Xác định từ đúng cho định nghĩa: 'An object used for writing or drawing with ink.'", options: ["Book", "Pen", "Table", "Chair"], correct: 1 },
+                { q: "Chọn từ chính xác miêu tả loài vật nhỏ nuôi trong nhà hay bắt chuột:", options: ["Dog", "Bird", "Cat", "Fish"], correct: 2 },
+                { q: "Từ nào chỉ nơi trú ngụ an toàn của con người?", options: ["House", "Vehicle", "Institution", "Forest"], correct: 0 },
+                { q: "Chất lỏng không màu không mùi cần thiết cho sự sống là gì?", options: ["Juice", "Water", "Soda", "Coffee"], correct: 1 }
+            ],
+            "superHard": [
+                { q: "Thử thách cực độ A1: Điền từ vào chỗ trống: 'An ... a day keeps the doctor away'", options: ["apple", "lemon", "melon", "peach"], correct: 0 },
+                { q: "Từ nào đồng nghĩa cấu trúc chỉ công cụ viết lác cơ bản nhất?", options: ["Instrument", "Pen", "Tool", "Device"], correct: 1 },
+                { q: "Tìm từ khóa ẩn chứa đặc tính loài vật 'feline' thân thuộc:", options: ["Canine", "Avian", "Cat", "Bovine"], correct: 2 },
+                { q: "Từ tiếng Anh mang sắc thái biểu đạt 'tổ ấm gia đình':", options: ["House", "Shelter", "Cabin", "Tent"], correct: 0 },
+                { q: "Hợp chất hóa học H2O tương ứng với từ vựng nào?", options: ["Liquid", "Water", "Fluid", "Moisture"], correct: 1 }
+            ]
+        },
+        "A2": {
+            "easy": [
+                { q: "Từ nào mô tả một người có chiều cao vượt trội?", options: ["Short", "Tall", "Fast", "Slow"], correct: 1 },
+                { q: "Thời tiết lúc có tuyết rơi lạnh giá gọi là gì?", options: ["Hot", "Cold", "Warm", "Cool"], correct: 1 },
+                { q: "Phương tiện chạy trên đường ray có nhiều toa là gì?", options: ["Plane", "Bus", "Train", "Bike"], correct: 2 },
+                { q: "Nơi các bác sĩ chữa bệnh gọi là gì?", options: ["Airport", "Hospital", "Library", "Market"], correct: 1 },
+                { q: "Hành động đi tham quan các vùng đất mới gọi là gì?", options: ["Traveling", "Cooking", "Sleeping", "Studying"], correct: 0 }
+            ],
+            "medium": [
+                { q: "Chọn từ tiếng Anh chỉ người có chiều cao 'Tall':", options: ["Short", "Tall", "Fast", "Slow"], correct: 1 },
+                { q: "Từ vựng nào chỉ thời tiết 'Cold' (Lạnh)?", options: ["Hot", "Cold", "Warm", "Cool"], correct: 1 },
+                { q: "Phương tiện 'Train' dịch sang tiếng Việt là gì?", options: ["Máy bay", "Xe buýt", "Tàu hỏa", "Xe đạp"], correct: 2 },
+                { q: "Nơi chữa bệnh 'Hospital' là gì?", options: ["Sân bay", "Bệnh viện", "Thư viện", "Chợ"], correct: 1 },
+                { q: "Hành động 'Travel' có nghĩa là gì?", options: ["Du lịch", "Nấu ăn", "Ngủ", "Học"], correct: 0 }
+            ],
+            "hard": [
+                { q: "Chọn từ đồng nghĩa cho 'Very tall structure or person':", options: ["Compact", "Tall", "Tiny", "Brief"], correct: 1 },
+                { q: "Từ nào diễn tả nhiệt độ môi trường băng giá?", options: ["Scorching", "Cold", "Humid", "Breezy"], correct: 1 },
+                { q: "Phương tiện công cộng di chuyển bằng đầu máy:", options: ["Aircraft", "Train", "Automobile", "Vessel"], correct: 1 },
+                { q: "Cơ sở y tế chuyên khoa điều trị nội trú và ngoại trú:", options: ["Terminal", "Hospital", "Campus", "Outlet"], correct: 1 },
+                { q: "Hành trình di chuyển xa để khám phá văn hóa:", options: ["Traveling", "Commuting", "Strolling", "Wandering"], correct: 0 }
+            ],
+            "superHard": [
+                { q: "Bẫy từ vựng A2: Từ nào diễn tả độ cao vượt mức bình thường?", options: ["Immeasurable", "Towering", "Abyssal", "Miniscule"], correct: 1 },
+                { q: "Trạng thái khí quyển hạ thấp dưới 0 độ C gọi bằng tính từ:", options: ["Gelid", "Torrid", "Arid", "Temperate"], correct: 0 },
+                { q: "Hệ thống vận tải đường sắt đồng bộ:", options: ["Railway transit", "Airway", "Highway", "Seaway"], correct: 0 },
+                { q: "Đơn vị y tế công cộng có giường bệnh lưu trú:", options: ["Hospital", "Clinic", "Pharmacy", "Laboratory"], correct: 0 },
+                { q: "Sự dịch chuyển địa lý mang tính chất trải nghiệm dài ngày:", options: ["Expedition", "Migration", "Commute", "Stroll"], correct: 0 }
+            ]
+        },
+        "B1": {
+            "easy": [
+                { q: "Kiến thức tích lũy qua thời gian làm việc gọi là gì?", options: ["Experience", "Experiment", "Expense", "Danger"], correct: 0 },
+                { q: "Tập hợp tự nhiên xung quanh ta gọi là gì?", options: ["Government", "Environment", "Economy", "Technology"], correct: 1 },
+                { q: "Trạng thái đạt được mục tiêu lớn gọi là gì?", options: ["Failure", "Success", "Diligence", "Laziness"], correct: 1 },
+                { q: "Cảm giác tin tưởng năng lực bản thân gọi là gì?", options: ["Insecure", "Confident", "Anxious", "Depressed"], correct: 1 },
+                { q: "Phương án giải quyết rắc rối gọi là gì?", options: ["Problem", "Solution", "Question", "Challenge"], correct: 1 }
+            ],
+            "medium": [
+                { q: "Từ 'Experience' mang nghĩa chuẩn xác nào?", options: ["Kinh nghiệm", "Thí nghiệm", "Chi phí", "Nguy hiểm"], correct: 0 },
+                { q: "Môi trường sống trong tiếng Anh là gì?", options: ["Government", "Environment", "Economy", "Technology"], correct: 1 },
+                { q: "Sự thành công được gọi bằng từ nào?", options: ["Failure", "Success", "Diligence", "Laziness"], correct: 1 },
+                { q: "Sự tự tin trong tiếng Anh là gì?", options: ["Tự ti", "Tự tin", "Lo lắng", "Buồn"], correct: 1 },
+                { q: "Giải pháp tối ưu tương ứng với từ nào?", options: ["Vấn đề", "Giải pháp", "Câu hỏi", "Thử thách"], correct: 1 }
+            ],
+            "hard": [
+                { q: "Chọn từ đồng nghĩa với 'Practical knowledge gained through involvement':", options: ["Experience", "Theory", "Hypothesis", "Speculation"], correct: 0 },
+                { q: "Khái niệm chỉ tổng thể các điều kiện sinh thái xung quanh con người:", options: ["Environment", "Atmosphere", "Biosphere", "Habitat"], correct: 0 },
+                { q: "Đạt được kết quả mỹ mãn sau quá trình nỗ lực:", options: ["Achieve success", "Face failure", "Struggle", "Collapse"], correct: 0 },
+                { q: "Phẩm chất tâm lý vững vàng, tin vào giá trị bản thân:", options: ["Confidence", "Doubt", "Hesitation", "Arrogance"], correct: 0 },
+                { q: "Biện pháp khắc phục triệt để một bài toán khó:", options: ["Solution", "Complication", "Obstacle", "Hurdle"], correct: 0 }
+            ],
+            "superHard": [
+                { q: "Thuật ngữ biểu thị vốn sống thực tế tích lũy:", options: ["Empirical experience", "Abstract thought", "Innate trait", "Vague notion"], correct: 0 },
+                { q: "Hệ sinh thái và cảnh quan bao quanh con người gọi là:", options: ["Surrounding environment", "Isolated vacuum", "Synthetic matrix", "Static backdrop"], correct: 0 },
+                { q: "Sự kiện đánh dấu mốc son chiến thắng toàn diện:", options: ["Triumphant success", "Abject failure", "Stagnant effort", "Minor setback"], correct: 0 },
+                { q: "Thái độ tự chủ, tín nhiệm năng lực cá nhân không nao núng:", options: ["Steadfast confidence", "Crippling doubt", "Blind panic", "Vulnerable fear"], correct: 0 },
+                { q: "Hành động tháo gỡ nút thắt phức tạp của vấn đề:", options: ["Devising a solution", "Creating a deadlock", "Ignoring the issue", "Adding complications"], correct: 0 }
+            ]
+        },
+        "B2": {
+            "easy": [
+                { q: "Từ chỉ sự việc có tầm ảnh hưởng lớn và quan trọng:", options: ["Trivial", "Significant", "Minor", "Temporary"], correct: 1 },
+                { q: "Quyền lợi thiết thực nhận được từ dự án:", options: ["Benefit", "Drawback", "Expense", "Penalty"], correct: 0 },
+                { q: "Hành động công khai nhận lỗi hoặc xác nhận thông tin:", options: ["Ignore", "Acknowledge", "Reject", "Oppose"], correct: 1 },
+                { q: "Hành động đặt nền móng đầu tiên cho tổ chức:", options: ["Destroy", "Establish", "Hide", "Forget"], correct: 1 },
+                { q: "Phương án thay thế khi phương án chính không khả thi:", options: ["Alternative", "Traditional", "Mandatory", "Fixed"], correct: 0 }
+            ],
+            "medium": [
+                { q: "Trong IELTS, từ 'Significant' đồng nghĩa với gì?", options: ["Quan trọng / Đáng kể", "Nhỏ nhặt", "Tạm thời", "Yếu ớt"], correct: 0 },
+                { q: "Lợi ích phúc lợi tiếng Anh là gì?", options: ["Benefit", "Drawback", "Expense", "Penalty"], correct: 0 },
+                { q: "Thừa nhận công nhận tiếng Anh là gì?", options: ["Ignore", "Acknowledge", "Reject", "Oppose"], correct: 1 },
+                { q: "Thành lập thiết lập tiếng Anh là gì?", options: ["Destroy", "Establish", "Hide", "Forget"], correct: 1 },
+                { q: "Giải pháp lựa chọn thay thế tiếng Anh là gì?", options: ["Alternative", "Traditional", "Mandatory", "Fixed"], correct: 0 }
+            ],
+            "hard": [
+                { q: "Chọn từ học thuật tương đương 'Of considerable amount or importance':", options: ["Negligible", "Significant", "Transient", "Flimsy"], correct: 1 },
+                { q: "Khoản lãi hoặc ưu đãi mang tính chiến lược:", options: ["Advantage", "Disadvantage", "Liability", "Detriment"], correct: 0 },
+                { q: "Chính thức công nhận tính xác thực của vấn đề:", options: ["Acknowledge", "Repudiate", "Disavow", "Contradict"], correct: 0 },
+                { q: "Khởi tạo một cơ sở hoặc học thuyết mới có hệ thống:", options: ["Establish", "Demolish", "Subvert", "Eradicate"], correct: 0 },
+                { q: "Phương án đối ứng tính khả dụng tương đương:", options: ["Alternative option", "Sole constraint", "Rigid dogma", "Permanent barrier"], correct: 0 }
+            ],
+            "superHard": [
+                { q: "Thuật ngữ chỉ tầm vóc tác động sâu rộng quy mô lớn:", options: ["Substantial impact", "Trivial consequence", "Negligible effect", "Fleeting trace"], correct: 0 },
+                { q: "Hệ thống phúc lợi thiết thực đem lại giá trị thặng dư:", options: ["Lucrative benefit", "Detrimental drawback", "Punitive measure", "Restrictive rule"], correct: 0 },
+                { q: "Sự công nhận khách quan dựa trên thực tế bằng chứng:", options: ["Cognizant acknowledgment", "Wilful ignorance", "Stubborn denial", "Blind rejection"], correct: 0 },
+                { q: "Thiết lập nền móng vững chắc cho một thực thể pháp lý:", options: ["Institutionalize", "Liquidate", "Dissolve", "Dismantle"], correct: 0 },
+                { q: "Quyền lựa chọn dự phòng mang tính chiến lược tối ưu:", options: ["Viable alternative", "Dead end", "Sole ultimatum", "Fixed obligation"], correct: 0 }
+            ]
+        },
+        "C1": {
+            "easy": [
+                { q: "Hành động làm dịu bớt mức độ nghiêm trọng của vấn đề:", options: ["Mitigate", "Exacerbate", "Prolong", "Eliminate"], correct: 0 },
+                { q: "Sự việc chắc chắn sẽ xảy ra không thể ngăn cản:", options: ["Inevitable", "Random", "Rare", "Surprising"], correct: 0 },
+                { q: "Bản báo cáo phân tích số liệu bao quát mọi khía cạnh:", options: ["Comprehensive", "Superficial", "Brief", "Vague"], correct: 0 },
+                { q: "Thái độ luôn nghi ngờ và nhìn theo hướng tiêu cực:", options: ["Optimistic", "Pessimistic", "Realistic", "Neutral"], correct: 1 },
+                { q: "Nguồn lực tài chính hoặc tài sản có giá trị cao:", options: ["Substantial", "Meager", "Scarce", "Depleted"], correct: 0 }
+            ],
+            "medium": [
+                { q: "Từ 'Mitigate' trong IELTS Academic có nghĩa là gì?", options: ["Làm giảm nhẹ", "Làm trầm trọng thêm", "Kéo dài", "Xóa bỏ"], correct: 0 },
+                { q: "Không thể tránh khỏi tiếng Anh là gì?", options: ["Avoidable", "Inevitable", "Surprising", "Rare"], correct: 1 },
+                { q: "Toàn diện bao quát tiếng Anh là gì?", options: ["Comprehensive", "Simple", "Narrow", "Vague"], correct: 0 },
+                { q: "Bi quan tiếng Anh là gì?", options: ["Optimistic", "Pessimistic", "Realistic", "Neutral"], correct: 1 },
+                { q: "Đáng kể lớn lao tiếng Anh là gì?", options: ["Substantial", "Insignificant", "Fragile", "Temporary"], correct: 0 }
+            ],
+            "hard": [
+                { q: "Chọn từ đồng nghĩa chuẩn academic cho 'Make less severe, serious, or painful':", options: ["Mitigate", "Exacerbate", "Prolong", "Aggravate"], correct: 0 },
+                { q: "Tính chất tất yếu không thể cưỡng lại của quy luật tự nhiên:", options: ["Inevitable", "Contingent", "Doubtful", "Precarious"], correct: 0 },
+                { q: "Đặc điểm bao trùm tất cả các khía cạnh cốt lõi:", options: ["Comprehensive", "Superficial", "Fragmented", "Partial"], correct: 0 },
+                { q: "Hệ tư tưởng nhìn nhận cục diện u ám, thiếu niềm tin:", options: ["Pessimism", "Optimism", "Pragmatism", "Idealism"], correct: 0 },
+                { q: "Quy mô nguồn lực hoặc giá trị vật chất vô cùng lớn:", options: ["Substantial", "Meager", "Negligible", "Scanty"], correct: 0 }
+            ],
+            "superHard": [
+                { q: "Cấu trúc từ vựng chỉ chiến lược giảm thiểu rủi ro tối ưu:", options: ["Risk mitigation strategy", "Risk exacerbation plan", "Hazard intensification", "Threat prolongation"], correct: 0 },
+                { q: "Sự kiện định mệnh mang tính quy luật tất yếu lịch sử:", options: ["Inevitable historical progression", "Random coincidence", "Fluke occurrence", "Transient anomaly"], correct: 0 },
+                { q: "Tầm nhìn chiến lược đa chiều giải quyết vấn đề thấu đáo:", options: ["Comprehensive framework", "Myopic viewpoint", "Fragmented approach", "Superficial glance"], correct: 0 },
+                { q: "Trạng thái tâm lý hoài nghi cực đoan trước biến cố:", options: ["Deep-seated pessimism", "Blind optimism", "Naïve compliance", "Indifferent apathy"], correct: 0 },
+                { q: "Khoản đầu tư hoặc giá trị thặng dư khổng lồ mang tính bước ngoặt:", options: ["Substantial capital injection", "Meager allowance", "Trivial sum", "Insignificant token"], correct: 0 }
+            ]
+        },
+        "C2": {
+            "easy": [
+                { q: "Hiện tượng công nghệ xuất hiện có mặt ở khắp mọi nơi:", options: ["Rare", "Ubiquitous", "Mysterious", "Extinct"], correct: 1 },
+                { q: "Sự phân chia rạch ròi thành hai mặt đối lập hoàn toàn:", options: ["Dichotomy", "Unity", "Consensus", "Chaos"], correct: 0 },
+                { q: "Vẻ đẹp tồn tại trong thời gian cực kỳ ngắn ngủi rồi biến mất:", options: ["Eternal", "Ephemeral", "Enduring", "Immutable"], correct: 1 },
+                { q: "Đặc điểm làm việc cực kỳ cẩn trọng, tỉ mỉ đến từng chi tiết:", options: ["Careless", "Meticulous", "Hasty", "Indifferent"], correct: 1 },
+                { q: "Giải quyết vấn đề dựa trên hiệu quả thực tế thay vì lý thuyết:", options: ["Pragmatic", "Theoretical", "Utopian", "Dogmatic"], correct: 0 }
+            ],
+            "medium": [
+                { q: "Cấp độ C2: Từ 'Ubiquitous' mang nghĩa chuẩn xác là gì?", options: ["Hiếm gặp", "Phổ biến / Có mặt ở khắp mọi nơi", "Bí ẩn", "Độc hại"], correct: 1 },
+                { q: "Sự phân đôi đối lập tiếng Anh là gì?", options: ["Dichotomy", "Unity", "Consensus", "Chaos"], correct: 0 },
+                { q: "Phù du ngắn ngủi tiếng Anh là gì?", options: ["Ephemeral", "Eternal", "Clear", "Heavy"], correct: 0 },
+                { q: "Tỉ mỉ kỹ lưỡng tiếng Anh là gì?", options: ["Meticulous", "Careless", "Hasty", "Indifferent"], correct: 0 },
+                { q: "Thực tế thực dụng tiếng Anh là gì?", options: ["Pragmatic", "Theoretical", "Utopian", "Dogmatic"], correct: 0 }
+            ],
+            "hard": [
+                { q: "Chọn từ đồng nghĩa chuẩn xác với 'Present, appearing, or found everywhere':", options: ["Ubiquitous", "Scarce", "Elusive", "Dormant"], correct: 0 },
+                { q: "Sự phân tách rạch ròi thành hai nhánh mâu thuẫn trực diện:", options: ["Dichotomy", "Synthesis", "Harmony", "Confluence"], correct: 0 },
+                { q: "Đặc tính tồn tại chớp nhoáng rồi tan biến của các giá trị vật chất:", options: ["Ephemeral", "Perpetual", "Enduring", "Invariable"], correct: 0 },
+                { q: "Sự cẩn trọng tuyệt đối đến từng chi tiết nhỏ không sơ hở:", options: ["Meticulousness", "Superficiality", "Slackness", "Remissness"], correct: 0 },
+                { q: "Triết lý hành động bám sát thực tiễn hiệu quả cao:", options: ["Pragmatic approach", "Dogmatic theory", "Abstract idealism", "Utopian delusion"], correct: 0 }
+            ],
+            "superHard": [
+                { q: "Thuật ngữ triết học chỉ sự hiện diện toàn năng khắp mọi không gian:", options: ["Ubiquity", "Total isolation", "Absolute vacuum", "Transient localization"], correct: 0 },
+                { q: "Học thuyết đối lập phân tách cấu trúc nhị nguyên phức tạp:", options: ["Inextricable dichotomy", "Flawless consensus", "Absolute homogeneity", "Unified synthesis"], correct: 0 },
+                { q: "Bản chất mong manh, phù du của các thành tựu trần thế:", options: ["Ephemeral nature", "Eternal permanence", "Unshakable durability", "Immutable steadfastness"], correct: 0 },
+                { q: "Tiêu chuẩn kiểm định khắt khe, tỉ mỉ đến từng tiểu tiết chuyên môn:", options: ["Meticulous rigour", "Flawed negligence", "Hasty oversight", "Superficial glance"], correct: 0 },
+                { q: "Tư duy quản trị chiến lược mang tính thực tiễn thực dụng sắc bén:", options: ["Pragmatic acumen", "Dogmatic blindness", "Utopian fantasy", "Abstract speculation"], correct: 0 }
+            ]
+        }
+    };
+
+    let currentLevel = "A1";
+    let currentDiff = "easy";
+    let questionsList = [];
+    let currentIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    const setupScreen = document.getElementById('setupScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    const writingScreen = document.getElementById('writingScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    
+    const levelSelect = document.getElementById('levelSelect');
+    const diffSelect = document.getElementById('diffSelect');
+    const startBtn = document.getElementById('startBtn');
+    
+    const goToWritingBtn = document.getElementById('goToWritingBtn');
+    const backToSetupFromGame = document.getElementById('backToSetupFromGame');
+    const backToSetupBtn = document.getElementById('backToSetupBtn');
+    const toWritingFromResBtn = document.getElementById('toWritingFromResBtn');
+    
+    const progressText = document.getElementById('progressText');
+    const scoreText = document.getElementById('scoreText');
+    const questionBox = document.getElementById('questionBox');
+    const optionsGrid = document.getElementById('optionsGrid');
+    const feedbackBox = document.getElementById('feedbackBox');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    const finalScoreText = document.getElementById('finalScoreText');
+    const restartBtn = document.getElementById('restartBtn');
+
+    const userWritingInput = document.getElementById('userWritingInput');
+    const submitWritingBtn = document.getElementById('submitWritingBtn');
+    const writingFeedback = document.getElementById('writingFeedback');
+    const correctionBox = document.getElementById('correctionBox');
+    const correctionList = document.getElementById('correctionList');
+
+    goToWritingBtn.addEventListener('click', () => {
+        setupScreen.classList.remove('active');
+        writingScreen.classList.add('active');
+    });
+
+    backToSetupFromGame.addEventListener('click', () => {
+        gameScreen.classList.remove('active');
+        setupScreen.classList.add('active');
+    });
+
+    backToSetupBtn.addEventListener('click', () => {
+        writingScreen.classList.remove('active');
+        setupScreen.classList.add('active');
+    });
+
+    toWritingFromResBtn.addEventListener('click', () => {
+        resultScreen.classList.remove('active');
+        writingScreen.classList.add('active');
+    });
+
+    startBtn.addEventListener('click', () => {
+        currentLevel = levelSelect.value;
+        currentDiff = diffSelect.value;
+        
+        if (questionBank[currentLevel] && questionBank[currentLevel][currentDiff]) {
+            questionsList = [...questionBank[currentLevel][currentDiff]];
+        } else {
+            questionsList = [...questionBank["A1"]["easy"]];
+        }
+
+        currentIndex = 0;
+        score = 0;
+
+        setupScreen.classList.remove('active');
+        gameScreen.classList.add('active');
+        loadQuestion();
+    });
+
+    function loadQuestion() {
+        answered = false;
+        nextBtn.style.display = 'none';
+        feedbackBox.innerHTML = `💡 Hãy suy nghĩ kỹ và chọn đáp án tối ưu nhất!`;
+        feedbackBox.style.backgroundColor = '#f9fafb';
+        feedbackBox.style.color = '#333';
+
+        const qData = questionsList[currentIndex];
+        progressText.textContent = `Câu: ${currentIndex + 1}/${questionsList.length}`;
+        scoreText.textContent = `Điểm: ${score}`;
+        questionBox.textContent = qData.q;
+
+        let shuffledOptions = qData.options.map((opt, idx) => ({ text: opt, originalIndex: idx }));
+        shuffledOptions.sort(() => Math.random() - 0.5);
+
+        optionsGrid.innerHTML = '';
+        shuffledOptions.forEach((item, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = `${String.fromCharCode(65 + index)}. ${item.text}`;
+            btn.addEventListener('click', () => checkAnswer(item.originalIndex, qData.correct, btn, shuffledOptions));
+            optionsGrid.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedOriginalIndex, correctIndex, selectedBtn, shuffledOptions) {
+        if (answered) return;
+        answered = true;
+
+        const allButtons = optionsGrid.querySelectorAll('.option-btn');
+
+        allButtons.forEach((btn, index) => {
+            if (shuffledOptions[index].originalIndex === correctIndex) {
+                btn.classList.add('correct');
+            }
+        });
+
+        if (selectedOriginalIndex === correctIndex) {
+            score++;
+            feedbackBox.innerHTML = `✅ Chính xác tuyệt đối! Bạn quá nhạy bén và thông minh luôn! 🔥`;
+            feedbackBox.style.backgroundColor = '#dcfce7';
+            feedbackBox.style.color = '#166534';
+        } else {
+            selectedBtn.classList.add('incorrect');
+            feedbackBox.innerHTML = `❌ Chưa chuẩn rồi! Cố gắng tập trung rút kinh nghiệm câu sau nhé! 💪`;
+            feedbackBox.style.backgroundColor = '#fee2e2';
+            feedbackBox.style.color = '#991b1b';
+        }
+
+        scoreText.textContent = `Điểm: ${score}`;
+
+        if (currentIndex < questionsList.length - 1) {
+            nextBtn.style.display = 'block';
+            nextBtn.textContent = 'Câu Tiếp Theo ➡️';
+        } else {
+            nextBtn.style.display = 'block';
+            nextBtn.textContent = 'Xem Kết Quả Tổng Kết 🏆';
+        }
+    }
+
+    nextBtn.addEventListener('click', () => {
+        currentIndex++;
+        if (currentIndex < questionsList.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    });
+
+    function showResult() {
+        gameScreen.classList.remove('active');
+        resultScreen.classList.add('active');
+        finalScoreText.textContent = `Bạn đạt tổng điểm: ${score} / ${questionsList.length}`;
+        
+        let praiseMsg = "Thấy chưa, bạn siêu giỏi và xuất sắc lắm luôn, đâu có gì làm khó được tư duy của bạn đâu! 🚀";
+        if (score < questionsList.length / 2) {
+            praiseMsg = "Khởi đầu như vậy là rất gan dạ rồi! Cứ kiên trì luyện tập là bạn sẽ vượt qua mọi bẫy từ vựng ngay! 💪";
+        }
+        document.getElementById('finalPraise').innerHTML = praiseMsg;
+    }
+
+    restartBtn.addEventListener('click', () => {
+        resultScreen.classList.remove('active');
+        setupScreen.classList.add('active');
+    });
+
+    // Gọi API route riêng phía Vercel để bảo mật Key
+    submitWritingBtn.addEventListener('click', async () => {
+        const text = userWritingInput.value.trim();
+
+        if (!text) {
+            writingFeedback.innerHTML = `⚠️ Bạn chưa nhập nội dung viết nào cả!`;
+            writingFeedback.style.backgroundColor = '#fee2e2';
+            writingFeedback.style.color = '#991b1b';
+            correctionBox.style.display = 'none';
+            return;
+        }
+
+        writingFeedback.innerHTML = `⏳ Hệ thống đang chấm bài và phân tích lỗi viết...`;
+        writingFeedback.style.backgroundColor = '#eef2ff';
+        writingFeedback.style.color = '#4338ca';
+        correctionBox.style.display = 'none';
+        submitWritingBtn.disabled = true;
+
+        try {
+            // Gọi đến file Serverless function tại /api/chat trên Vercel của bạn
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ text: text })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            const aiReply = data.reply;
+
+            writingFeedback.innerHTML = `✨ Đã chấm bài xong!`;
+            writingFeedback.style.backgroundColor = '#dcfce7';
+            writingFeedback.style.color = '#166534';
+
+            correctionBox.style.display = 'block';
+            
+            if (aiReply.includes("<li>")) {
+                correctionList.innerHTML = aiReply;
+            } else {
+                correctionList.innerHTML = `<li>${aiReply.replace(/\n/g, '<br>')}</li>`;
+            }
+
+        } catch (error) {
+            writingFeedback.innerHTML = `❌ Lỗi xử lý: ${error.message}`;
+            writingFeedback.style.backgroundColor = '#fee2e2';
+            writingFeedback.style.color = '#991b1b';
+        } finally {
+            submitWritingBtn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>
