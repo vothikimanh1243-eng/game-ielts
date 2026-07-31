@@ -11,18 +11,21 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. TÍNH NĂNG TẠO CÂU HỎI TRẮC NGHIỆM VÀ DỊCH CÂU TỪ AI
+    // 1. TÍNH NĂNG TẠO CÂU HỎI THÔNG MINH BỞI AI
     if (action === 'generate_questions') {
-      const prompt = `Bạn là một chuyên gia khảo thí tiếng Anh. Hãy tạo ra đúng 5 câu hỏi trắc nghiệm tiếng Anh ở cấp độ CEFR: ${level}, độ khó: ${diff}.
-Trong đó, hãy bao gồm ít nhất một câu hỏi dạng dịch câu tiếng Việt sang tiếng Anh (ví dụ dạng: "Chọn câu tiếng Anh đúng để dịch câu: 'Tên bạn là gì?'" hoặc các câu tương tự phù hợp cấp độ).
-Mỗi câu hỏi phải có:
-- "q": Nội dung câu hỏi kèm theo câu tiếng Việt cần chọn (Ví dụ: "Hãy chọn câu tiếng Anh chính xác nhất cho câu: 'Tên bạn là gì?'" hoặc các dạng câu hỏi từ vựng/ngữ pháp khác).
-- "options": Một mảng gồm đúng 4 lựa chọn đáp án bằng tiếng Anh.
-- "correct": Chỉ số của đáp án đúng trong mảng options (từ 0 đến 3).
+      const prompt = `Bạn là một chuyên gia khảo thí và giáo viên tiếng Anh giàu kinh nghiệm. Hãy tạo ra đúng 5 câu hỏi trắc nghiệm tiếng Anh chất lượng cao, phù hợp hoàn hảo với cấp độ CEFR: ${level} và độ khó: ${diff}.
 
-YÊU CẦU BẮT BUỘC: Chỉ trả về duy nhất một chuỗi JSON hợp lệ dưới dạng một mảng (Array) gồm 5 object, tuyệt đối không kèm theo bất kỳ lời chào, giải thích hay markdown code block nào bên ngoài (không dùng \`\`\`json). Ví dụ format:
+Yêu cầu chi tiết về nội dung câu hỏi:
+- Cân đối giữa các dạng: Dịch câu từ tiếng Việt sang tiếng Anh (ví dụ: các câu giao tiếp cơ bản như "Tên bạn là gì?", "Mẹ tôi nấu ăn", hoặc các câu phức tạp hơn tùy cấp độ C2/B1...), hoàn thiện câu, điền từ vào chỗ trống, và sửa lỗi ngữ pháp.
+- Các lựa chọn sai (distractors) phải hợp lý, có tính đánh đố nhẹ theo đúng độ khó ${diff} nhưng chỉ có duy nhất 1 đáp án đúng tuyệt đối.
+- Mỗi câu hỏi phải có cấu trúc JSON chính xác gồm:
+  - "q": Nội dung câu hỏi (kèm theo tiếng Việt rõ ràng nếu là dạng dịch câu hoặc bài tập ngữ cảnh).
+  - "options": Một mảng gồm đúng 4 lựa chọn đáp án bằng tiếng Anh.
+  - "correct": Chỉ số của đáp án đúng trong mảng options (từ 0 đến 3).
+
+YÊU CẦU BẮT BUỘC VỀ ĐỊNH DẠNG: Chỉ trả về duy nhất một chuỗi JSON hợp lệ dưới dạng một mảng (Array) gồm đúng 5 object, tuyệt đối không kèm theo bất kỳ lời chào, giải thích hay markdown code block nào bên ngoài (không dùng \`\`\`json). Ví dụ format chuẩn:
 [
-  {"q": "Chọn câu tiếng Anh đúng cho câu: 'Tên bạn là gì?'", "options": ["What is your name?", "How are you?", "Where are you?", "Who are you?"], "correct": 0}
+  {"q": "Hãy chọn câu tiếng Anh chính xác nhất để dịch câu: 'Tên bạn là gì?'", "options": ["What is your name?", "How are you?", "Who are you?", "Where are you from?"], "correct": 0}
 ]`;
 
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -34,7 +37,7 @@ YÊU CẦU BẮT BUỘC: Chỉ trả về duy nhất một chuỗi JSON hợp l�
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile",
           messages: [{ role: "user", content: prompt }],
-          temperature: 0.7
+          temperature: 0.6
         })
       });
 
@@ -65,7 +68,7 @@ YÊU CẦU BẮT BUỘC: Chỉ trả về duy nhất một chuỗi JSON hợp l�
           messages: [
             {
               role: "system",
-              content: "Bạn là trợ lý chấm bài viết tiếng Anh. Hãy phát hiện lỗi ngữ pháp, chính tả, từ vựng và đưa ra gợi ý sửa chuẩn xác bằng tiếng Anh kèm giải thích ngắn bằng tiếng Việt. Trả về kết quả dạng danh sách thẻ HTML <li>."
+              content: "Bạn là trợ lý chấm bài viết tiếng Anh tận tâm. Hãy phát hiện lỗi ngữ pháp, chính tả, từ vựng và cấu trúc câu, sau đó đưa ra gợi ý sửa chuẩn xác bằng tiếng Anh kèm giải thích ngắn gọn, dễ hiểu bằng tiếng Việt. Trả về kết quả dạng danh sách thẻ HTML <li>."
             },
             {
               role: "user",
