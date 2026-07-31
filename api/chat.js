@@ -7,26 +7,22 @@ export default async function handler(req, res) {
   const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
-    return res.status(500).json({ error: 'Chưa cấu hình GROQ_API_KEY trên Vercel Environment Variables!' });
+    return res.status(500).json({ error: 'Chưa cấu hình GROQ_API_KEY trên Vercel!' });
   }
 
   try {
-    // 1. TÍNH NĂNG TẠO CÂU HỎI TRẮC NGHIỆM (CHỈ DẠNG: CÂU HỎI TIẾNG ANH & GHÉP TỪ)
     if (action === 'generate_questions') {
-      const prompt = `Bạn là một giáo viên tiếng Anh chuyên nghiệp. Hãy tạo ra đúng 5 câu hỏi trắc nghiệm hoàn toàn phù hợp với cấp độ CEFR: ${level} và độ khó: ${diff}.
+      const prompt = `Bạn là một giáo viên tiếng Anh. Hãy tạo ra đúng 5 câu hỏi tự luận tiếng Anh ở cấp độ ${level}, độ khó ${diff}.
+Yêu cầu bao gồm các dạng: Dịch câu từ tiếng Việt sang tiếng Anh (ví dụ: "Tên bạn là gì?", "Mẹ tôi nấu ăn",...) và sắp xếp/ghép từ thành câu hoàn chỉnh.
 
-YÊU CẦU BẮT BUỘC VỀ DẠNG CÂU HỎI: Chỉ sử dụng 2 dạng bài tập sau cho toàn bộ 5 câu:
-1. Dạng Câu hỏi tiếng Anh / Dịch câu: Cho một câu tiếng Việt (hoặc ngữ cảnh) và yêu cầu chọn câu tiếng Anh chuẩn xác (Ví dụ: "Hãy chọn câu tiếng Anh đúng để dịch câu: 'Tên bạn là gì?'" hoặc các câu giao tiếp/ngữ pháp nâng cao hơn tùy level).
-2. Dạng Ghép từ / Sắp xếp từ: Cho các từ bị xáo trộn hoặc yêu cầu chọn trật tự đúng để sắp xếp thành một câu tiếng Anh hoàn chỉnh (Ví dụ: "Sắp xếp các từ sau thành câu đúng: [is / what / name / your / ?]").
+Mỗi câu hỏi phải có cấu trúc JSON dạng mảng gồm các object với các trường sau:
+- "q": Nội dung câu hỏi (bằng tiếng Việt yêu cầu dịch hoặc yêu cầu sắp xếp từ).
+- "correct": Đáp án tiếng Anh chính xác mẫu mà người dùng phải gõ vào.
+- "explanation": Giải thích ngắn gọn bằng tiếng Việt.
 
-Mỗi câu hỏi phải có cấu trúc JSON chính xác gồm:
-- "q": Nội dung câu hỏi (bằng tiếng Việt kết hợp tiếng Anh rõ ràng).
-- "options": Một mảng gồm đúng 4 lựa chọn đáp án bằng tiếng Anh.
-- "correct": Chỉ số của đáp án đúng trong mảng options (từ 0 đến 3).
-
-YÊU CẦU ĐỊNH DẠNG TUYỆT ĐỐI: Chỉ trả về duy nhất một chuỗi JSON hợp lệ dưới dạng một mảng (Array) gồm đúng 5 object, không kèm theo bất kỳ lời chào, giải thích hay markdown code block nào bên ngoài (không dùng \`\`\`json). Ví dụ format:
+YÊU CẦU ĐỊNH DẠNG TUYỆT ĐỐI: Chỉ trả về duy nhất một chuỗi JSON hợp lệ dưới dạng một mảng (Array) gồm đúng 5 object, tuyệt đối không kèm markdown code block (không dùng \`\`\`json). Ví dụ format:
 [
-  {"q": "Hãy chọn câu tiếng Anh đúng để dịch câu: 'Tên bạn là gì?'", "options": ["What is your name?", "How are you?", "Who are you?", "Where are you from?"], "correct": 0}
+  {"q": "Hãy dịch câu sau sang tiếng Anh: 'Tên bạn là gì?'", "correct": "What is your name?", "explanation": "Câu hỏi danh tính cơ bản."}
 ]`;
 
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -48,15 +44,19 @@ YÊU CẦU ĐỊNH DẠNG TUYỆT ĐỐI: Chỉ trả về duy nhất một chu�
       let rawContent = data.choices[0].message.content.trim();
       rawContent = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
       
-      const questionsArray = JSON.parse(rawContent);
+      const parsedData = JSON.parse(rawContent);
+      // Đổi tên trường cho khớp với code giao diện (correctAnswer)
+      const questionsArray = parsedData.map(item => ({
+        q: item.q,
+        correctAnswer: item.correct || item.correctAnswer,
+        explanation: item.explanation
+      }));
+
       return res.status(200).json({ questions: questionsArray });
     }
 
-    // 2. TÍNH NĂNG CHẤM BÀI WRITING
     if (action === 'evaluate_writing' || !action) {
-      if (!text) {
-        return res.status(400).json({ error: 'Thiếu nội dung văn bản cần chấm!' });
-      }
+      if (!text) return res.status(400).json({ error: 'Thiếu nội dung!' });
 
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
@@ -67,14 +67,8 @@ YÊU CẦU ĐỊNH DẠNG TUYỆT ĐỐI: Chỉ trả về duy nhất một chu�
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile",
           messages: [
-            {
-              role: "system",
-              content: "Bạn là trợ lý chấm bài viết tiếng Anh. Hãy phát hiện lỗi ngữ pháp, chính tả, từ vựng và đưa ra gợi ý sửa chuẩn xác bằng tiếng Anh kèm giải thích ngắn bằng tiếng Việt. Trả về kết quả dạng danh sách thẻ HTML <li>."
-            },
-            {
-              role: "user",
-              content: `Chấm và sửa giúp tôi đoạn viết tiếng Anh sau: "${text}"`
-            }
+            { role: "system", content: "Bạn là trợ lý chấm bài viết tiếng Anh. Trả về kết quả dạng thẻ <li>." },
+            { role: "user", content: `Chấm và sửa giúp tôi: "${text}"` }
           ],
           temperature: 0.1
         })
@@ -83,12 +77,10 @@ YÊU CẦU ĐỊNH DẠNG TUYỆT ĐỐI: Chỉ trả về duy nhất một chu�
       const data = await response.json();
       if (data.error) throw new Error(data.error.message);
 
-      const aiReply = data.choices[0].message.content;
-      return res.status(200).json({ reply: aiReply });
+      return res.status(200).json({ reply: data.choices[0].message.content });
     }
 
     return res.status(400).json({ error: 'Action không hợp lệ!' });
-
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
