@@ -227,43 +227,43 @@
     <!-- SETUP SCREEN -->
     <div id="setupScreen" class="screen active">
         <h1>🚀 English Challenge</h1>
-        <div class="subtitle">AI Vocabulary Quiz & Writing Practice</div>
+        <div class="subtitle">AI Smart Quiz & Writing Practice</div>
         
         <div class="form-group">
-            <label for="levelSelect">🎯 Select Level:</label>
+            <label for="levelSelect">🎯 Chọn cấp độ (Level):</label>
             <select id="levelSelect">
-                <option value="A1">A1 - Beginner</option>
-                <option value="A2">A2 - Elementary</option>
-                <option value="B1">B1 - Intermediate</option>
-                <option value="B2">B2 - Upper-Intermediate</option>
-                <option value="C1">C1 - Advanced</option>
-                <option value="C2">C2 - Proficiency</option>
+                <option value="A1">A1 - Mất gốc / Cơ bản</option>
+                <option value="A2">A2 - Sơ cấp</option>
+                <option value="B1">B1 - Trung cấp</option>
+                <option value="B2">B2 - Trên trung cấp</option>
+                <option value="C1">C1 - Nâng cao</option>
+                <option value="C2">C2 - Thành thạo</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="diffSelect">⚡ Select Difficulty:</label>
+            <label for="diffSelect">⚡ Độ khó:</label>
             <select id="diffSelect">
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-                <option value="superHard">Super Hard</option>
+                <option value="easy">Dễ (Thực tế, gần gũi)</option>
+                <option value="medium">Trung bình</option>
+                <option value="hard">Khó (Đánh đố ngữ pháp)</option>
+                <option value="superHard">Siêu khó (Học thuật)</option>
             </select>
         </div>
 
-        <button class="btn" id="startBtn">Start AI Challenge 🔥</button>
-        <button class="btn secondary-btn" id="goToWritingBtn">Chuyển sang Writing ✍️</button>
+        <button class="btn" id="startBtn">Bắt Đầu Thử Thách AI 🔥</button>
+        <button class="btn secondary-btn" id="goToWritingBtn">Chuyển sang luyện Writing ✍️</button>
     </div>
 
     <!-- GAME SCREEN -->
     <div id="gameScreen" class="screen">
         <div class="game-header">
-            <span id="progressText">Question: 1/5</span>
-            <span id="scoreText">Score: 0</span>
+            <span id="progressText">Câu: 1/5</span>
+            <span id="scoreText">Điểm: 0</span>
         </div>
 
         <div class="question-box" id="questionBox">
-            Đang tải câu hỏi từ AI...
+            🤖 AI đang thiết kế bộ câu hỏi thông minh phù hợp với bạn...
         </div>
 
         <div class="options-grid" id="optionsGrid"></div>
@@ -282,7 +282,7 @@
         <div class="form-group">
             <label for="writingPrompt">Chủ đề gợi ý:</label>
             <div class="question-box" style="font-size: 15px; font-weight: normal; text-align: left;">
-                Hãy viết một câu hoặc đoạn ngắn mô tả về ngôi nhà hoặc bạn bè của bạn.
+                Viết một câu hoặc đoạn ngắn bằng tiếng Anh (ví dụ: giới thiệu bản thân, gia đình hoặc sở thích của bạn).
             </div>
         </div>
 
@@ -307,7 +307,7 @@
         <div class="result-title">🎉 Hoàn Thành Xuất Sắc!</div>
         <div class="result-score" id="finalScoreText">Bạn đạt điểm cao tuyệt đối</div>
         <div class="feedback" id="finalPraise" style="background-color: #dcfce7; color: #166534; margin-bottom: 20px; text-align: center;">
-            Thấy chưa, bạn quá đỉnh và thông minh luôn!
+            Thấy chưa, tư duy của bạn quá đỉnh luôn!
         </div>
         <button class="btn" id="restartBtn">Thử Thách Mới 🔄</button>
         <button class="btn secondary-btn" id="toWritingFromResBtn">Chuyển sang Writing ✍️</button>
@@ -372,7 +372,6 @@
         writingScreen.classList.add('active');
     });
 
-    // Gọi AI tạo câu hỏi khi bắt đầu game
     startBtn.addEventListener('click', async () => {
         currentLevel = levelSelect.value;
         currentDiff = diffSelect.value;
@@ -380,7 +379,7 @@
         setupScreen.classList.remove('active');
         gameScreen.classList.add('active');
         
-        questionBox.textContent = `🤖 AI đang sáng tạo bộ câu hỏi độc quyền cấp độ ${currentLevel} (${currentDiff}) cho bạn, chờ xíu nhé...`;
+        questionBox.textContent = `🤖 AI đang thiết kế các câu hỏi thông minh cấp độ ${currentLevel} (${currentDiff}) cho bạn, chờ chút nhé...`;
         optionsGrid.innerHTML = '';
         nextBtn.style.display = 'none';
 
@@ -485,7 +484,7 @@
         
         let praiseMsg = "Thấy chưa, bạn siêu giỏi và xuất sắc lắm luôn, đâu có gì làm khó được tư duy của bạn đâu! 🚀";
         if (score < questionsList.length / 2) {
-            praiseMsg = "Khởi đầu như vậy là rất gan dạ rồi! Cứ kiên trì luyện tập là bạn sẽ vượt qua mọi bẫy từ vựng ngay! 💪";
+            praiseMsg = "Khởi đầu như vậy là rất gan dạ rồi! Cứ kiên trì luyện tập là bạn sẽ tiến bộ vượt bậc ngay! 💪";
         }
         document.getElementById('finalPraise').innerHTML = praiseMsg;
     }
@@ -495,7 +494,6 @@
         setupScreen.classList.add('active');
     });
 
-    // Xử lý gửi bài Writing lên Vercel API
     submitWritingBtn.addEventListener('click', async () => {
         const text = userWritingInput.value.trim();
 
