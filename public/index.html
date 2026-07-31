@@ -233,31 +233,6 @@
         <button class="btn vocab-btn" id="goToVocabBtn">📚 Tra cứu từ vựng (A1 -> C2)</button>
     </div>
 
-    <!-- VOCABULARY SCREEN -->
-    <div id="vocabScreen" class="screen">
-        <h1>📚 Từ Vựng Theo Trình Độ</h1>
-        <div class="subtitle">Tổng hợp từ vựng chuẩn từ A1 đến C2 do AI cung cấp</div>
-
-        <div class="form-group">
-            <label for="vocabLevelSelect">🎯 Chọn trình độ muốn xem từ vựng:</label>
-            <select id="vocabLevelSelect">
-                <option value="A1">A1 - Cơ bản</option>
-                <option value="A2">A2 - Sơ cấp</option>
-                <option value="B1">B1 - Trung cấp</option>
-                <option value="B2">B2 - Trên trung cấp</option>
-                <option value="C1">C1 - Nâng cao</option>
-                <option value="C2">C2 - Thành thạo</option>
-            </select>
-            <button class="btn vocab-btn" id="loadVocabBtn" style="margin-top: 10px;">Xem Danh Sách Từ Vựng 🔍</button>
-        </div>
-
-        <div class="question-box" id="vocabResultBox">
-            💡 Bấm nút trên để AI liệt kê các từ vựng cốt lõi kèm nghĩa và ví dụ theo cấp độ bạn chọn nhé!
-        </div>
-
-        <button class="btn secondary-btn" id="backToSetupFromVocab">Quay lại màn hình chính 🏠</button>
-    </div>
-
     <!-- GAME SCREEN -->
     <div id="gameScreen" class="screen">
         <div class="game-header">
@@ -337,7 +312,6 @@
     const setupScreen = document.getElementById('setupScreen');
     const gameScreen = document.getElementById('gameScreen');
     const writingScreen = document.getElementById('writingScreen');
-    const vocabScreen = document.getElementById('vocabScreen');
     const resultScreen = document.getElementById('resultScreen');
     
     const levelSelect = document.getElementById('levelSelect');
@@ -346,10 +320,6 @@
     
     const goToWritingBtn = document.getElementById('goToWritingBtn');
     const goToVocabBtn = document.getElementById('goToVocabBtn');
-    const backToSetupFromVocab = document.getElementById('backToSetupFromVocab');
-    const loadVocabBtn = document.getElementById('loadVocabBtn');
-    const vocabLevelSelect = document.getElementById('vocabLevelSelect');
-    const vocabResultBox = document.getElementById('vocabResultBox');
 
     const backToSetupFromGame = document.getElementById('backToSetupFromGame');
     const backToSetupBtn = document.getElementById('backToSetupBtn');
@@ -379,14 +349,14 @@
         writingScreen.classList.add('active');
     });
 
+    // Mở trang web từ điển trực tiếp khi ấn nút Tra cứu từ vựng
     goToVocabBtn.addEventListener('click', () => {
-        setupScreen.classList.remove('active');
-        vocabScreen.classList.add('active');
-    });
-
-    backToSetupFromVocab.addEventListener('click', () => {
-        vocabScreen.classList.remove('active');
-        setupScreen.classList.add('active');
+        const choice = confirm("Bấm OK để mở Cambridge Dictionary (Chuẩn A1-C2) hoặc Cancel để mở Oxford Learner's Dictionaries.");
+        if (choice) {
+            window.open('https://dictionary.cambridge.org/', '_blank');
+        } else {
+            window.open('https://www.oxfordlearnersdictionaries.com/', '_blank');
+        }
     });
 
     backToSetupFromGame.addEventListener('click', () => {
@@ -402,32 +372,6 @@
     toWritingFromResBtn.addEventListener('click', () => {
         resultScreen.classList.remove('active');
         writingScreen.classList.add('active');
-    });
-
-    loadVocabBtn.addEventListener('click', async () => {
-        const selectedVocabLevel = vocabLevelSelect.value;
-        vocabResultBox.innerHTML = `⏳ AI đang tổng hợp từ vựng cấp độ ${selectedVocabLevel}...`;
-        loadVocabBtn.disabled = true;
-
-        try {
-            const response = await fetch("/api/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    action: "get_vocabulary",
-                    level: selectedVocabLevel
-                })
-            });
-
-            const data = await response.json();
-            if (data.error) throw new Error(data.error);
-
-            vocabResultBox.innerHTML = data.vocabularyHtml;
-        } catch (error) {
-            vocabResultBox.innerHTML = `❌ Lỗi tải từ vựng: ${error.message}`;
-        } finally {
-            loadVocabBtn.disabled = false;
-        }
     });
 
     startBtn.addEventListener('click', async () => {
