@@ -5,198 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>English Vocabulary & Writing Challenge</title>
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #333;
-        }
-
-        .container {
-            background-color: #ffffff;
-            padding: 30px 40px;
-            border-radius: 24px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 24px;
-            color: #4338ca;
-            margin-top: 0;
-            margin-bottom: 5px;
-        }
-
-        .subtitle {
-            font-size: 14px;
-            color: #6b7280;
-            margin-bottom: 25px;
-        }
-
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            font-size: 14px;
-            color: #374151;
-            margin-bottom: 8px;
-        }
-
-        select, textarea, input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #d1d5db;
-            border-radius: 12px;
-            font-size: 16px;
-            background-color: #f9fafb;
-            outline: none;
-            transition: border 0.3s;
-        }
-
-        select:focus, textarea:focus, input[type="text"]:focus {
-            border-color: #6366f1;
-        }
-
-        .btn {
-            background-color: #4f46e5;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s, transform 0.1s;
-            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
-            margin-top: 10px;
-        }
-
-        .btn:hover {
-            background-color: #4338ca;
-            transform: translateY(-1px);
-        }
-
-        .secondary-btn {
-            background-color: #6b7280;
-        }
-        .secondary-btn:hover {
-            background-color: #4b5563;
-        }
-
-        .vocab-btn {
-            background-color: #0ea5e9;
-        }
-        .vocab-btn:hover {
-            background-color: #0284c7;
-        }
-
-        .game-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            color: #4b5563;
-            background: #f3f4f6;
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        .question-box {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 20px;
-            padding: 18px;
-            background: #eef2ff;
-            border-radius: 14px;
-            border: 1px dashed #c7d2fe;
-            line-height: 1.5;
-            text-align: left;
-            max-height: 250px;
-            overflow-y: auto;
-        }
-
-        .feedback {
-            font-size: 15px;
-            font-weight: 600;
-            min-height: 55px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px;
-            border-radius: 12px;
-            background-color: #f9fafb;
-            margin-bottom: 15px;
-            line-height: 1.4;
-            text-align: left;
-        }
-
-        .correction-box {
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            text-align: left;
-            display: none;
-        }
-
-        .correction-box h3 {
-            margin: 0 0 8px 0;
-            font-size: 15px;
-            color: #b45309;
-        }
-
-        .correction-box p, .correction-box ul {
-            margin: 0;
-            font-size: 14px;
-            color: #78350f;
-            line-height: 1.5;
-        }
-
-        .next-btn {
-            display: none;
-            background-color: #10b981;
-        }
-        .next-btn:hover {
-            background-color: #059669;
-        }
-
-        .result-title {
-            font-size: 26px;
-            color: #1f2937;
-            margin-bottom: 15px;
-        }
-
-        .result-score {
-            font-size: 18px;
-            color: #4b5563;
-            margin-bottom: 25px;
-        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%); min-height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center; color: #333; }
+        .container { background-color: #ffffff; padding: 30px 40px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25); width: 100%; max-width: 650px; text-align: center; }
+        h1 { font-size: 24px; color: #4338ca; margin-top: 0; margin-bottom: 5px; }
+        .subtitle { font-size: 14px; color: #6b7280; margin-bottom: 25px; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 8px; }
+        select, textarea, input[type="text"] { width: 100%; padding: 12px; border: 2px solid #d1d5db; border-radius: 12px; font-size: 16px; background-color: #f9fafb; outline: none; transition: border 0.3s; }
+        select:focus, textarea:focus, input[type="text"]:focus { border-color: #6366f1; }
+        .btn { background-color: #4f46e5; color: white; font-size: 16px; font-weight: 600; padding: 12px 24px; border: none; border-radius: 12px; cursor: pointer; width: 100%; transition: background 0.2s, transform 0.1s; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); margin-top: 10px; }
+        .btn:hover { background-color: #4338ca; transform: translateY(-1px); }
+        .secondary-btn { background-color: #6b7280; }
+        .secondary-btn:hover { background-color: #4b5563; }
+        .vocab-btn { background-color: #0ea5e9; }
+        .vocab-btn:hover { background-color: #0284c7; }
+        .shuffle-btn { background-color: #f59e0b; margin-bottom: 15px; }
+        .shuffle-btn:hover { background-color: #d97706; }
+        .game-header { display: flex; justify-content: space-between; font-size: 14px; color: #4b5563; background: #f3f4f6; padding: 10px 15px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
+        .question-box { font-size: 16px; font-weight: 600; color: #1f2937; margin-bottom: 20px; padding: 18px; background: #eef2ff; border-radius: 14px; border: 1px dashed #c7d2fe; line-height: 1.5; text-align: left; }
+        .feedback { font-size: 15px; font-weight: 600; min-height: 55px; display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 12px; background-color: #f9fafb; margin-bottom: 15px; line-height: 1.4; text-align: left; }
+        .correction-box { background: #fffbeb; border: 1px solid #fde68a; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: left; display: none; }
+        .correction-box h3 { margin: 0 0 8px 0; font-size: 15px; color: #b45309; }
+        .correction-box p { margin: 0; font-size: 14px; color: #78350f; line-height: 1.5; }
+        .next-btn { display: none; background-color: #10b981; }
+        .next-btn:hover { background-color: #059669; }
+        .result-title { font-size: 26px; color: #1f2937; margin-bottom: 15px; }
+        .result-score { font-size: 18px; color: #4b5563; margin-bottom: 25px; }
     </style>
 </head>
 <body>
@@ -205,12 +42,12 @@
     <!-- SETUP SCREEN -->
     <div id="setupScreen" class="screen active">
         <h1>🚀 English Challenge</h1>
-        <div class="subtitle">AI Interactive Translation & Writing Practice</div>
+        <div class="subtitle">Luyện tập Biên dịch & Writing ngẫu nhiên</div>
         
         <div class="form-group">
             <label for="levelSelect">🎯 Chọn cấp độ (Level):</label>
             <select id="levelSelect">
-                <option value="A1">A1 - Cơ bản (Mất gốc)</option>
+                <option value="A1">A1 - Cơ bản</option>
                 <option value="A2">A2 - Sơ cấp</option>
                 <option value="B1">B1 - Trung cấp</option>
                 <option value="B2">B2 - Trên trung cấp</option>
@@ -222,35 +59,37 @@
         <div class="form-group">
             <label for="diffSelect">⚡ Độ khó:</label>
             <select id="diffSelect">
-                <option value="easy">Dễ (Câu ngắn, giao tiếp thực tế)</option>
+                <option value="easy">Dễ (Câu ngắn, thực tế)</option>
                 <option value="medium">Trung bình</option>
-                <option value="hard">Khó (Ngữ pháp nâng cao)</option>
+                <option value="hard">Khó (Cấu trúc nâng cao)</option>
             </select>
         </div>
 
-        <button class="btn" id="startBtn">Bắt Đầu Trả Lời Câu Hỏi 🔥</button>
-        <button class="btn secondary-btn" id="goToWritingBtn">Chuyển sang luyện Writing ✍️</button>
+        <button class="btn" id="startBtn">Bắt Đầu 5 Câu Hỏi Ngẫu Nhiên 🔥</button>
         <button class="btn vocab-btn" id="goToVocabBtn">📚 Tra cứu từ vựng (A1 -> C2)</button>
     </div>
 
-    <!-- GAME SCREEN -->
+    <!-- GAME / WRITING 5 QUESTIONS SCREEN -->
     <div id="gameScreen" class="screen">
         <div class="game-header">
             <span id="progressText">Câu: 1/5</span>
             <span id="scoreText">Điểm: 0</span>
         </div>
 
+        <!-- Nút đổi 5 câu hỏi ngẫu nhiên khác -->
+        <button class="btn shuffle-btn" id="shuffleQuestionsBtn">🔄 Đổi bộ 5 câu hỏi ngẫu nhiên khác</button>
+
         <div class="question-box" id="questionBox">
-            🤖 AI đang tạo câu hỏi tiếng Anh cho bạn...
+            🤖 AI đang tạo câu hỏi...
         </div>
 
         <div class="answer-section">
             <label for="userAnswerInput">Nhập câu trả lời tiếng Anh của bạn:</label>
-            <input type="text" id="userAnswerInput" placeholder="Type your answer here...">
+            <input type="text" id="userAnswerInput" placeholder="Type your English answer here...">
             <button class="btn" id="submitAnswerBtn">Nộp Bài Trả Lời 🚀</button>
         </div>
 
-        <div class="feedback" id="feedbackBox">💡 Gõ câu tiếng Anh và bấm nộp bài để AI chấm điểm nhé!</div>
+        <div class="feedback" id="feedbackBox">💡 Nhập câu tiếng Anh và bấm nộp bài!</div>
 
         <div class="correction-box" id="gameCorrectionBox">
             <h3>📌 Gợi ý / Đáp án chuẩn từ AI:</h3>
@@ -261,43 +100,12 @@
         <button class="btn secondary-btn" id="backToSetupFromGame">Quay lại cài đặt ⚙️</button>
     </div>
 
-    <!-- WRITING SCREEN -->
-    <div id="writingScreen" class="screen">
-        <h1>✍️ English Writing Practice</h1>
-        <div class="subtitle">Chấm lỗi Writing bảo mật qua Vercel API</div>
-
-        <div class="form-group">
-            <label for="writingPrompt">Chủ đề gợi ý:</label>
-            <div class="question-box" style="font-size: 15px; font-weight: normal;">
-                Viết một đoạn ngắn bằng tiếng Anh (ví dụ: giới thiệu bản thân, gia đình hoặc công việc hàng ngày).
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="userWritingInput">Nhập nội dung viết của bạn:</label>
-            <textarea id="userWritingInput" rows="4" placeholder="Type your English text here..."></textarea>
-        </div>
-
-        <div class="feedback" id="writingFeedback">💡 Nhập đoạn văn và bấm nút để hệ thống chấm bài nhé!</div>
-
-        <div class="correction-box" id="correctionBox">
-            <h3>🔍 Nhận Xét & Sửa Lỗi:</h3>
-            <ul id="correctionList"></ul>
-        </div>
-
-        <button class="btn" id="submitWritingBtn">Gửi Bài Chấm 🚀</button>
-        <button class="btn secondary-btn" id="backToSetupBtn">Quay lại màn hình chính 🏠</button>
-    </div>
-
     <!-- RESULT SCREEN -->
     <div id="resultScreen" class="screen">
         <div class="result-title">🎉 Hoàn Thành Xuất Sắc!</div>
-        <div class="result-score" id="finalScoreText">Bạn đạt điểm cao tuyệt đối</div>
-        <div class="feedback" id="finalPraise" style="background-color: #dcfce7; color: #166534; margin-bottom: 20px; text-align: center;">
-            Thấy chưa, bạn siêu giỏi và xuất sắc lắm luôn!
-        </div>
-        <button class="btn" id="restartBtn">Thử Thách Mới 🔄</button>
-        <button class="btn secondary-btn" id="toWritingFromResBtn">Chuyển sang Writing ✍️</button>
+        <div class="result-score" id="finalScoreText">Bạn đạt điểm</div>
+        <button class="btn" id="restartBtn">Thử Thách Bộ Khác 🔄</button>
+        <button class="btn secondary-btn" id="backHomeBtn">Về trang chủ 🏠</button>
     </div>
 </div>
 
@@ -311,19 +119,17 @@
 
     const setupScreen = document.getElementById('setupScreen');
     const gameScreen = document.getElementById('gameScreen');
-    const writingScreen = document.getElementById('writingScreen');
     const resultScreen = document.getElementById('resultScreen');
     
     const levelSelect = document.getElementById('levelSelect');
     const diffSelect = document.getElementById('diffSelect');
     const startBtn = document.getElementById('startBtn');
-    
-    const goToWritingBtn = document.getElementById('goToWritingBtn');
     const goToVocabBtn = document.getElementById('goToVocabBtn');
+    const shuffleQuestionsBtn = document.getElementById('shuffleQuestionsBtn');
 
     const backToSetupFromGame = document.getElementById('backToSetupFromGame');
-    const backToSetupBtn = document.getElementById('backToSetupBtn');
-    const toWritingFromResBtn = document.getElementById('toWritingFromResBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const backHomeBtn = document.getElementById('backHomeBtn');
     
     const progressText = document.getElementById('progressText');
     const scoreText = document.getElementById('scoreText');
@@ -334,24 +140,10 @@
     const gameCorrectionBox = document.getElementById('gameCorrectionBox');
     const gameCorrectionText = document.getElementById('gameCorrectionText');
     const nextBtn = document.getElementById('nextBtn');
-    
     const finalScoreText = document.getElementById('finalScoreText');
-    const restartBtn = document.getElementById('restartBtn');
 
-    const userWritingInput = document.getElementById('userWritingInput');
-    const submitWritingBtn = document.getElementById('submitWritingBtn');
-    const writingFeedback = document.getElementById('writingFeedback');
-    const correctionBox = document.getElementById('correctionBox');
-    const correctionList = document.getElementById('correctionList');
-
-    goToWritingBtn.addEventListener('click', () => {
-        setupScreen.classList.remove('active');
-        writingScreen.classList.add('active');
-    });
-
-    // Mở trang web từ điển trực tiếp khi ấn nút Tra cứu từ vựng
     goToVocabBtn.addEventListener('click', () => {
-        const choice = confirm("Bấm OK để mở Cambridge Dictionary (Chuẩn A1-C2) hoặc Cancel để mở Oxford Learner's Dictionaries.");
+        const choice = confirm("Bấm OK để mở Cambridge Dictionary hoặc Cancel để mở Oxford.");
         if (choice) {
             window.open('https://dictionary.cambridge.org/', '_blank');
         } else {
@@ -364,28 +156,22 @@
         setupScreen.classList.add('active');
     });
 
-    backToSetupBtn.addEventListener('click', () => {
-        writingScreen.classList.remove('active');
+    backHomeBtn.addEventListener('click', () => {
+        resultScreen.classList.remove('active');
         setupScreen.classList.add('active');
     });
 
-    toWritingFromResBtn.addEventListener('click', () => {
-        resultScreen.classList.remove('active');
-        writingScreen.classList.add('active');
-    });
-
-    startBtn.addEventListener('click', async () => {
+    // Hàm gọi API lấy 5 câu hỏi ngẫu nhiên
+    async function fetchRandomQuestions() {
         currentLevel = levelSelect.value;
         currentDiff = diffSelect.value;
         
-        setupScreen.classList.remove('active');
-        gameScreen.classList.add('active');
-        
-        questionBox.textContent = `🤖 AI đang thiết kế bộ câu hỏi tự luận cấp độ ${currentLevel} cho bạn, chờ xíu nhé...`;
+        questionBox.textContent = `🤖 AI đang trộn và tạo mới 5 câu hỏi cấp độ ${currentLevel} (${currentDiff})...`;
         userAnswerInput.style.display = 'none';
         submitAnswerBtn.style.display = 'none';
         nextBtn.style.display = 'none';
         gameCorrectionBox.style.display = 'none';
+        shuffleQuestionsBtn.disabled = true;
 
         try {
             const response = await fetch("/api/chat", {
@@ -407,9 +193,22 @@
             loadQuestion();
 
         } catch (error) {
-            questionBox.textContent = `❌ Lỗi tải câu hỏi từ AI: ${error.message}`;
-            feedbackBox.innerHTML = `💡 Hãy quay lại cài đặt và thử lại nhé.`;
+            questionBox.textContent = `❌ Lỗi tải câu hỏi: ${error.message}`;
+            feedbackBox.innerHTML = `💡 Hãy thử bấm đổi câu hỏi lại nhé.`;
+        } finally {
+            shuffleQuestionsBtn.disabled = false;
         }
+    }
+
+    startBtn.addEventListener('click', () => {
+        setupScreen.classList.remove('active');
+        gameScreen.classList.add('active');
+        fetchRandomQuestions();
+    });
+
+    // Nút đổi 5 câu hỏi ngẫu nhiên khác ngay trong quá trình làm
+    shuffleQuestionsBtn.addEventListener('click', () => {
+        fetchRandomQuestions();
     });
 
     function loadQuestion() {
@@ -420,7 +219,7 @@
         nextBtn.style.display = 'none';
         gameCorrectionBox.style.display = 'none';
         
-        feedbackBox.innerHTML = `💡 Nhập câu trả lời bằng tiếng Anh của bạn vào ô trên rồi bấm nút nộp bài!`;
+        feedbackBox.innerHTML = `💡 Nhập câu trả lời bằng tiếng Anh rồi bấm nộp bài!`;
         feedbackBox.style.backgroundColor = '#f9fafb';
         feedbackBox.style.color = '#333';
 
@@ -434,7 +233,7 @@
         if (answered) return;
         const userText = userAnswerInput.value.trim();
         if (!userText) {
-            feedbackBox.innerHTML = `⚠️ Bạn chưa nhập câu trả lời nào cả!`;
+            feedbackBox.innerHTML = `⚠️ Bạn chưa nhập câu trả lời!`;
             feedbackBox.style.backgroundColor = '#fee2e2';
             feedbackBox.style.color = '#991b1b';
             return;
@@ -442,9 +241,7 @@
 
         answered = true;
         submitAnswerBtn.disabled = true;
-        feedbackBox.innerHTML = `⏳ AI đang chấm câu trả lời của bạn...`;
-        feedbackBox.style.backgroundColor = '#eef2ff';
-        feedbackBox.style.color = '#4338ca';
+        feedbackBox.innerHTML = `⏳ AI đang chấm câu trả lời...`;
 
         const qData = questionsList[currentIndex];
 
@@ -476,7 +273,7 @@
 
             scoreText.textContent = `Điểm: ${score}`;
             gameCorrectionBox.style.display = 'block';
-            gameCorrectionText.innerHTML = `Đáp án gợi ý chuẩn: <b>${qData.correctAnswer}</b><br>Giải thích: ${qData.explanation || ''}`;
+            gameCorrectionText.innerHTML = `Đáp án chuẩn: <b>${qData.correctAnswer}</b><br>Giải thích: ${qData.explanation || ''}`;
 
             if (currentIndex < questionsList.length - 1) {
                 nextBtn.style.display = 'block';
@@ -487,7 +284,7 @@
             }
 
         } catch (error) {
-            feedbackBox.innerHTML = `❌ Lỗi kết nối AI: ${error.message}`;
+            feedbackBox.innerHTML = `❌ Lỗi kết nối: ${error.message}`;
         } finally {
             submitAnswerBtn.disabled = false;
         }
@@ -498,49 +295,16 @@
         if (currentIndex < questionsList.length) {
             loadQuestion();
         } else {
-            showResult();
+            gameScreen.classList.remove('active');
+            resultScreen.classList.add('active');
+            finalScoreText.textContent = `Bạn đạt tổng điểm: ${score} / ${questionsList.length}`;
         }
     });
-
-    function showResult() {
-        gameScreen.classList.remove('active');
-        resultScreen.classList.add('active');
-        finalScoreText.textContent = `Bạn đạt tổng điểm: ${score} / ${questionsList.length}`;
-    }
 
     restartBtn.addEventListener('click', () => {
         resultScreen.classList.remove('active');
-        setupScreen.classList.add('active');
-    });
-
-    submitWritingBtn.addEventListener('click', async () => {
-        const text = userWritingInput.value.trim();
-        if (!text) {
-            writingFeedback.innerHTML = `⚠️ Bạn chưa nhập nội dung viết nào cả!`;
-            return;
-        }
-
-        writingFeedback.innerHTML = `⏳ Hệ thống đang chấm bài...`;
-        submitWritingBtn.disabled = true;
-
-        try {
-            const response = await fetch("/api/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "evaluate_writing", text: text })
-            });
-
-            const data = await response.json();
-            if (data.error) throw new Error(data.error);
-
-            writingFeedback.innerHTML = `✨ Đã chấm bài xong!`;
-            correctionBox.style.display = 'block';
-            correctionList.innerHTML = data.reply;
-        } catch (error) {
-            writingFeedback.innerHTML = `❌ Lỗi: ${error.message}`;
-        } finally {
-            submitWritingBtn.disabled = false;
-        }
+        gameScreen.classList.add('active');
+        fetchRandomQuestions();
     });
 </script>
 </body>
