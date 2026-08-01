@@ -14,14 +14,16 @@
         .screen.active { display: block; }
         .form-group { margin-bottom: 20px; text-align: left; }
         label { display: block; font-weight: 600; font-size: 14px; color: #374151; margin-bottom: 8px; }
-        select, input[type="text"] { width: 100%; padding: 12px; border: 2px solid #d1d5db; border-radius: 12px; font-size: 16px; background-color: #f9fafb; outline: none; transition: border 0.3s; }
-        select:focus, input[type="text"]:focus { border-color: #6366f1; }
+        select, input[type="text"], textarea { width: 100%; padding: 12px; border: 2px solid #d1d5db; border-radius: 12px; font-size: 16px; background-color: #f9fafb; outline: none; transition: border 0.3s; }
+        select:focus, input[type="text"]:focus, textarea:focus { border-color: #6366f1; }
         .btn { background-color: #4f46e5; color: white; font-size: 16px; font-weight: 600; padding: 12px 24px; border: none; border-radius: 12px; cursor: pointer; width: 100%; transition: background 0.2s, transform 0.1s; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); margin-top: 10px; }
         .btn:hover { background-color: #4338ca; transform: translateY(-1px); }
         .secondary-btn { background-color: #6b7280; }
         .secondary-btn:hover { background-color: #4b5563; }
         .vocab-btn { background-color: #0ea5e9; }
         .vocab-btn:hover { background-color: #0284c7; }
+        .writing-mode-btn { background-color: #10b981; }
+        .writing-mode-btn:hover { background-color: #059669; }
         .shuffle-btn { background-color: #f59e0b; margin-bottom: 15px; }
         .shuffle-btn:hover { background-color: #d97706; }
         .game-header { display: flex; justify-content: space-between; font-size: 14px; color: #4b5563; background: #f3f4f6; padding: 10px 15px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; }
@@ -42,7 +44,7 @@
     <!-- SETUP SCREEN -->
     <div id="setupScreen" class="screen active">
         <h1>🚀 English Challenge</h1>
-        <div class="subtitle">Luyện tập Biên dịch & Writing ngẫu nhiên</div>
+        <div class="subtitle">Luyện tập Dịch câu & Viết đoạn văn (Writing)</div>
         
         <div class="form-group">
             <label for="levelSelect">🎯 Chọn cấp độ (Level):</label>
@@ -65,18 +67,18 @@
             </select>
         </div>
 
-        <button class="btn" id="startBtn">Bắt Đầu 5 Câu Hỏi Ngẫu Nhiên 🔥</button>
+        <button class="btn" id="startBtn">Bắt Đầu 5 Câu Hỏi Dịch 🔥</button>
+        <button class="btn writing-mode-btn" id="startWritingBtn">✍️ Luyện Viết Đoạn Văn (Writing Free)</button>
         <button class="btn vocab-btn" id="goToVocabBtn">📚 Tra cứu từ vựng (A1 -> C2)</button>
     </div>
 
-    <!-- GAME SCREEN -->
+    <!-- GAME SCREEN (Dịch 5 câu) -->
     <div id="gameScreen" class="screen">
         <div class="game-header">
             <span id="progressText">Câu: 1/5</span>
             <span id="scoreText">Điểm: 0</span>
         </div>
 
-        <!-- Nút đổi 5 câu hỏi ngẫu nhiên mới -->
         <button class="btn shuffle-btn" id="shuffleQuestionsBtn">🔄 Đổi bộ 5 câu hỏi ngẫu nhiên khác</button>
 
         <div class="question-box" id="questionBox">
@@ -100,6 +102,32 @@
         <button class="btn secondary-btn" id="backToSetupFromGame">Quay lại cài đặt ⚙️</button>
     </div>
 
+    <!-- WRITING SCREEN (Viết đoạn văn tự do theo level) -->
+    <div id="writingScreen" class="screen">
+        <h1>✍️ Luyện Viết Đoạn Văn (Writing)</h1>
+        <div class="subtitle" id="writingSubtitle">Cấp độ: A1 | Chủ đề ngẫu nhiên</div>
+
+        <button class="btn shuffle-btn" id="shuffleWritingTopicBtn">🔄 Đổi chủ đề viết khác</button>
+
+        <div class="question-box" id="writingTopicBox">
+            🤖 AI đang tạo chủ đề viết...
+        </div>
+
+        <div class="form-group">
+            <label for="writingInput">Viết đoạn văn bằng tiếng Anh của bạn:</label>
+            <textarea id="writingInput" rows="5" placeholder="Write your paragraph here..."></textarea>
+        </div>
+
+        <button class="btn" id="submitWritingBtn">Gửi Bài Viết Cho AI Chấm 🚀</button>
+
+        <div class="correction-box" id="writingResultBox" style="display: block; margin-top: 15px;">
+            <h3>📊 Kết quả nhận xét & sửa lỗi từ AI:</h3>
+            <div id="writingFeedbackContent" style="font-size: 14px; color: #78350f; text-align: left; line-height: 1.6;">Chưa có bài nộp.</div>
+        </div>
+
+        <button class="btn secondary-btn" id="backToSetupFromWriting" style="margin-top: 15px;">Quay lại cài đặt ⚙️</button>
+    </div>
+
     <!-- RESULT SCREEN -->
     <div id="resultScreen" class="screen">
         <div class="result-title">🎉 Hoàn Thành Xuất Sắc!</div>
@@ -119,15 +147,19 @@
 
     const setupScreen = document.getElementById('setupScreen');
     const gameScreen = document.getElementById('gameScreen');
+    const writingScreen = document.getElementById('writingScreen');
     const resultScreen = document.getElementById('resultScreen');
     
     const levelSelect = document.getElementById('levelSelect');
     const diffSelect = document.getElementById('diffSelect');
     const startBtn = document.getElementById('startBtn');
+    const startWritingBtn = document.getElementById('startWritingBtn');
     const goToVocabBtn = document.getElementById('goToVocabBtn');
     const shuffleQuestionsBtn = document.getElementById('shuffleQuestionsBtn');
+    const shuffleWritingTopicBtn = document.getElementById('shuffleWritingTopicBtn');
 
     const backToSetupFromGame = document.getElementById('backToSetupFromGame');
+    const backToSetupFromWriting = document.getElementById('backToSetupFromWriting');
     const restartBtn = document.getElementById('restartBtn');
     const backHomeBtn = document.getElementById('backHomeBtn');
     
@@ -141,6 +173,13 @@
     const gameCorrectionText = document.getElementById('gameCorrectionText');
     const nextBtn = document.getElementById('nextBtn');
     const finalScoreText = document.getElementById('finalScoreText');
+
+    // Writing elements
+    const writingSubtitle = document.getElementById('writingSubtitle');
+    const writingTopicBox = document.getElementById('writingTopicBox');
+    const writingInput = document.getElementById('writingInput');
+    const submitWritingBtn = document.getElementById('submitWritingBtn');
+    const writingFeedbackContent = document.getElementById('writingFeedbackContent');
 
     goToVocabBtn.addEventListener('click', () => {
         const choice = confirm("Bấm OK để mở Cambridge Dictionary hoặc Cancel để mở Oxford.");
@@ -156,16 +195,22 @@
         setupScreen.classList.add('active');
     });
 
+    backToSetupFromWriting.addEventListener('click', () => {
+        writingScreen.classList.remove('active');
+        setupScreen.classList.add('active');
+    });
+
     backHomeBtn.addEventListener('click', () => {
         resultScreen.classList.remove('active');
         setupScreen.classList.add('active');
     });
 
+    // 1. Dịch câu hỏi ngẫu nhiên
     async function fetchRandomQuestions() {
         currentLevel = levelSelect.value;
         currentDiff = diffSelect.value;
         
-        questionBox.textContent = `🤖 AI đang trộn và tạo mới 5 câu hỏi cấp độ ${currentLevel} (${currentDiff})...`;
+        questionBox.textContent = `🤖 AI đang tạo mới 5 câu hỏi cấp độ ${currentLevel} (${currentDiff})...`;
         userAnswerInput.style.display = 'none';
         submitAnswerBtn.style.display = 'none';
         nextBtn.style.display = 'none';
@@ -190,10 +235,8 @@
             currentIndex = 0;
             score = 0;
             loadQuestion();
-
         } catch (error) {
             questionBox.textContent = `❌ Lỗi tải câu hỏi: ${error.message}`;
-            feedbackBox.innerHTML = `💡 Hãy thử bấm đổi câu hỏi lại nhé.`;
         } finally {
             shuffleQuestionsBtn.disabled = false;
         }
@@ -280,7 +323,6 @@
                 nextBtn.style.display = 'block';
                 nextBtn.textContent = 'Xem Kết Quả Tổng Kết 🏆';
             }
-
         } catch (error) {
             feedbackBox.innerHTML = `❌ Lỗi kết nối: ${error.message}`;
         } finally {
@@ -303,6 +345,81 @@
         resultScreen.classList.remove('active');
         gameScreen.classList.add('active');
         fetchRandomQuestions();
+    });
+
+    // 2. Chế độ Luyện Viết (Writing Free)
+    async function fetchWritingTopic() {
+        currentLevel = levelSelect.value;
+        currentDiff = diffSelect.value;
+        writingSubtitle.textContent = `Cấp độ: ${currentLevel} | Độ khó: ${currentDiff}`;
+        writingTopicBox.textContent = `🤖 AI đang tạo chủ đề viết phù hợp với cấp độ ${currentLevel}...`;
+        writingInput.value = '';
+        writingFeedbackContent.innerHTML = 'Hãy viết đoạn văn ở khung trên và bấm gửi để AI sửa bài chi tiết.';
+        shuffleWritingTopicBtn.disabled = true;
+
+        try {
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "generate_writing_topic",
+                    level: currentLevel,
+                    diff: currentDiff
+                })
+            });
+
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+
+            writingTopicBox.textContent = data.topic;
+        } catch (error) {
+            writingTopicBox.textContent = `❌ Lỗi tải chủ đề: ${error.message}`;
+        } finally {
+            shuffleWritingTopicBtn.disabled = false;
+        }
+    }
+
+    startWritingBtn.addEventListener('click', () => {
+        setupScreen.classList.remove('active');
+        writingScreen.classList.add('active');
+        fetchWritingTopic();
+    });
+
+    shuffleWritingTopicBtn.addEventListener('click', () => {
+        fetchWritingTopic();
+    });
+
+    submitWritingBtn.addEventListener('click', async () => {
+        const text = writingInput.value.trim();
+        if (!text) {
+            alert("Vui lòng viết đoạn văn trước khi gửi!");
+            return;
+        }
+
+        submitWritingBtn.disabled = true;
+        writingFeedbackContent.innerHTML = "⏳ AI đang phân tích ngữ pháp, từ vựng và chấm bài viết của bạn...";
+
+        try {
+            const response = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "evaluate_writing",
+                    level: currentLevel,
+                    topic: writingTopicBox.textContent,
+                    text: text
+                })
+            });
+
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+
+            writingFeedbackContent.innerHTML = data.reply;
+        } catch (error) {
+            writingFeedbackContent.innerHTML = `❌ Lỗi chấm bài: ${error.message}`;
+        } finally {
+            submitWritingBtn.disabled = false;
+        }
     });
 </script>
 </body>
