@@ -11,24 +11,28 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. TẠO CÂU HỎI TỰ LUẬN
+    // 1. TẠO CÂU HỎI TỰ LUẬN NGẪU NHIÊN THEO CẤP ĐỘ VÀ ĐỘ KHÓ
     if (action === 'generate_questions') {
       let diffInstruction = "";
       if (diff === 'easy') {
-        diffInstruction = "Độ khó: Dễ. Dùng các câu đơn ngắn gọn, thì cơ bản, từ vựng thông dụng.";
+        diffInstruction = "Độ khó: Dễ. Dùng các câu đơn ngắn gọn, thì cơ bản (hiện tại đơn, quá khứ đơn), từ vựng thông dụng.";
       } else if (diff === 'medium') {
-        diffInstruction = "Độ khó: Trung bình. Dùng câu ghép, mệnh đề quan hệ, thì phức tạp hơn.";
+        diffInstruction = "Độ khó: Trung bình. Dùng câu ghép, mệnh đề quan hệ, thì phức tạp hơn (hoàn thành, tương lai tiếp diễn).";
       } else if (diff === 'hard') {
-        diffInstruction = "Độ khó: Khó. BẮT BUỘC dùng cấu trúc nâng cao như câu điều kiện, đảo ngữ, bị động nâng cao, cụm động từ phức tạp.";
+        diffInstruction = "Độ khó: Khó. BẮT BUỘC dùng cấu trúc nâng cao như câu điều kiện loại 2/3, đảo ngữ, câu bị động nâng cao, cụm động từ phức tạp (phrasal verbs).";
       }
 
-      const prompt = `Bạn là một giáo viên tiếng Anh. Hãy tạo ra đúng 5 câu hỏi tự luận tiếng Anh ở cấp độ ${level}.
+      const randomSeed = Math.floor(Math.random() * 100000);
+
+      const prompt = `Bạn là một giáo viên tiếng Anh sáng tạo. Hãy tạo ra ngẫu nhiên đúng 5 câu hỏi tự luận tiếng Anh hoàn toàn mới ở cấp độ ${level} (Mã ngẫu nhiên: ${randomSeed}).
 ${diffInstruction}
-Yêu cầu: Dịch câu từ tiếng Việt sang tiếng Anh và sắp xếp/ghép từ thành câu hoàn chỉnh.
+Yêu cầu: 
+- Lựa chọn các chủ đề ngẫu nhiên khác nhau cho mỗi câu (ví dụ: gia đình, công nghệ, du lịch, sở thích, môi trường, công việc...).
+- Nhiệm vụ cho học viên: Dịch câu từ tiếng Việt sang tiếng Anh.
 
 QUAN TRỌNG: Chỉ trả về một mảng JSON thuần túy gồm đúng 5 object với cấu trúc chính xác sau, KHÔNG dùng markdown, KHÔNG dùng dấu ngoặc kép lồng nhau bên trong giá trị chuỗi:
 [
-  {"q": "Noi dung cau hoi", "correct": "Dap an tieng Anh", "explanation": "Giai thich"}
+  {"q": "Noi dung cau hoi tieng Viet", "correct": "Dap an chuan tieng Anh", "explanation": "Giai thich ngan gon ngu phap"}
 ]`;
 
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -37,7 +41,7 @@ QUAN TRỌNG: Chỉ trả về một mảng JSON thuần túy gồm đúng 5 obj
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile",
           messages: [{ role: "user", content: prompt }],
-          temperature: 0.5
+          temperature: 0.9 // Tăng độ sáng tạo và ngẫu nhiên cho AI
         })
       });
 
